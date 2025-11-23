@@ -1,38 +1,40 @@
-# sv
+# PeerPoker
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A peer-to-peer planning poker application for agile teams.
 
-## Creating a project
+## Features
 
-If you're seeing this, you've probably already done this step. Congrats!
+- 🔗 P2P connection - No central server stores your data
+- 🎴 Planning poker voting with Fibonacci sequence
+- 👥 Real-time participant synchronization
+- 🎉 Automatic consensus detection
+- 📋 One-click copy of agreed estimates
 
-```sh
-# create a new project in the current directory
-npx sv create
+## Usage
 
-# create a new project in my-app
-npx sv create my-app
-```
+1. Enter your name and click "Start Game"
+2. Share your link with team members
+3. Wait for everyone to join
+4. Select your estimate from the cards
+5. Click "Reveal Cards" when everyone has voted
+6. Click "New Round" to start over
 
-## Developing
+## Tech Stack
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+- SvelteKit 2.x
+- PeerJS (WebRTC)
+- Cloudflare Pages
+- TypeScript
 
-```sh
+## Development
+
+```bash
+npm install
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
 ```
 
-## Building
+Signaling Server
+This app requires a PeerJS signaling server. See peerpoker-signaling-server.
 
-To create a production version of your app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+License
+MIT
