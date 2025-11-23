@@ -4,6 +4,7 @@
 	import ConnectionPanel from '$lib/component/ConnectionPanel.svelte';
 	import ParticipantCard from '$lib/component/ParticipantCard.svelte';
 	import VoteCards from '$lib/component/VoteCards.svelte';
+	import GameControls from '$lib/component/GameControls.svelte';
 	import type { PeerId, Participant } from '$lib/types';
 
 	interface GameStateContext {
@@ -68,6 +69,8 @@
 					/>
 
 					<VoteCards />
+
+					<GameControls />
 
 					<div class="game-area">
 						<h2>参加者: {state.participants.size}</h2>
