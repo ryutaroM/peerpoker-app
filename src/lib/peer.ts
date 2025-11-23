@@ -15,9 +15,10 @@ export class PeerWrapper {
 
     public connect(): void {
         this.peer = new Peer(this.peerId, {
-            host: 'localhost',
-            port: 9000,
-            path: '/myapp'
+            host: 'peerpoker-signaling-server.onrender.com',
+            port: 443,
+            path: '/myapp',
+            secure: true
         });
 
         this.peer.on("open", (id) => {

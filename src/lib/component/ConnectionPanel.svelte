@@ -33,14 +33,21 @@
 		padding: 2rem;
 		margin-bottom: 2rem;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
 	}
 
 	.id-display {
 		display: flex;
 		align-items: center;
 		gap: 1rem;
-		margin-bottom: 1rem;
 		font-size: 1rem;
+	}
+
+	.id-display span {
+		white-space: nowrap;
+		font-weight: 600;
 	}
 
 	.id-display code {
@@ -52,12 +59,12 @@
 		color: #0066cc;
 		flex: 1;
 		overflow: auto;
+		word-break: break-all;
 	}
 
 	.share-btn {
 		background-color: #0066cc;
 		color: white;
-		width: 100%;
 		padding: 0.75rem 1.5rem;
 		border: none;
 		border-radius: 8px;
@@ -74,7 +81,8 @@
 	.connect-section {
 		display: flex;
 		gap: 0.5rem;
-		margin-top: 1rem;
+		align-items: stretch;
+		flex-wrap: wrap;
 	}
 
 	.connect-section label {
@@ -83,6 +91,7 @@
 
 	.connect-section input {
 		flex: 1;
+		min-width: 200px;
 		padding: 0.75rem;
 		border: 2px solid #ddd;
 		border-radius: 8px;
@@ -99,6 +108,7 @@
 		font-size: 1rem;
 		font-weight: 600;
 		transition: all 0.3s ease;
+		white-space: nowrap;
 	}
 
 	.connect-btn:hover:not(:disabled) {
@@ -108,5 +118,15 @@
 	.connect-btn:disabled {
 		opacity: 0.5;
 		cursor: not-allowed;
+	}
+
+	@media (max-width: 600px) {
+		.connect-section {
+			flex-direction: column;
+		}
+
+		.connect-section input {
+			min-width: 100%;
+		}
 	}
 </style>
