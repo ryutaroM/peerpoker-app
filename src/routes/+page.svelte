@@ -5,6 +5,7 @@
 	import ParticipantCard from '$lib/component/ParticipantCard.svelte';
 	import VoteCards from '$lib/component/VoteCards.svelte';
 	import GameControls from '$lib/component/GameControls.svelte';
+	import ResultBanner from '$lib/component/ResultBanner.svelte';
 	import type { PeerId, Participant } from '$lib/types';
 
 	interface GameStateContext {
@@ -63,7 +64,7 @@
 						onShareLink={() => {
 							const url = `${window.location.origin}?connect_to=${state.peerId}`;
 							navigator.clipboard.writeText(url);
-							alert('リンクをコピーしました！');
+							alert('copied link!');
 						}}
 						onConnect={() => state.connectToOpponent(opponentId)}
 					/>
@@ -72,8 +73,10 @@
 
 					<GameControls />
 
+					<ResultBanner />
+
 					<div class="game-area">
-						<h2>参加者: {state.participants.size}</h2>
+						<h2>Participants: {state.participants.size}</h2>
 						<div class="participants">
 							{#each Array.from(state.participants.entries()) as [id, participant]}
 								<ParticipantCard {participant} isRevealed={state.isRevealed} />
