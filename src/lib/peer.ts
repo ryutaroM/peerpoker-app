@@ -1,4 +1,6 @@
-import Peer, { DataConnection } from "peerjs";
+import Peer from 'peerjs';
+import type { DataConnection } from 'peerjs';
+import type { Message } from './types';
 
 export class PeerWrapper {
     private peer: Peer | null = null;
@@ -6,14 +8,14 @@ export class PeerWrapper {
 
     constructor(
         private peerId: string,
-        private onData: (peerId: string, data: any) => void,
+        private onData: (peerId: string, data: Message) => void,
         private onPeerConnected: (peerId: string) => void,
         private onPeerDisconnected: (peerId: string) => void
     ) { }
 
     public connect(): void {
         this.peer = new Peer(this.peerId, {
-            host: 'your-peerjs-server.com',
+            host: 'localhost',
             port: 9000,
             path: '/myapp'
         });
@@ -32,22 +34,50 @@ export class PeerWrapper {
     }
 
     public connectTo(peerId: string): void {
-        if (!this.peer) return;
+        console.log('connectTo called with peerId:', peerId);
+        if (!this.peer) {
+            console.log('this.peer is null, returning');
+            return;
+        }
 
         const conn = this.peer.connect(peerId);
+        console.log('Created connection:', conn);
 
-        this.setupConnection(conn);
+        // 接続がオープンするまで待つ
+        if (conn.open) {
+            console.log('Connection already open, setting up');
+            this.setupConnection(conn);
+        } else {
+            console.log('Waiting for connection to open');
+            conn.on('open', () => {
+                console.log('Connection opened, setting up');
+                this.setupConnection(conn);
+            });
+        }
     }
 
     private setupConnection(conn: DataConnection): void {
-        conn.on("open", () => {
-            console.log(`Connected to peer: ${conn.peer}`);
+        console.log('setupConnection called for peer:', conn.peer);
+
+        // 既に接続されている場合はすぐに処理
+        if (conn.open) {
+            console.log('Connection already open');
             this.conns.set(conn.peer, conn);
             this.onPeerConnected(conn.peer);
-        })
+        } else {
+            conn.on("open", () => {
+                console.log(`Connected to peer: ${conn.peer}`);
+                this.conns.set(conn.peer, conn);
+                this.onPeerConnected(conn.peer);
+            });
+        }
 
-        conn.on("data", (data) => {
-            this.onData(conn.peer, data);
+        conn.on("data", (data: unknown) => {
+            if (data && typeof data === 'object' && 'type' in data && 'senderId' in data) {
+                this.onData(conn.peer, data as Message);
+            } else {
+                console.warn('Invalid message format:', data);
+            }
         });
 
         conn.on("close", () => {
@@ -61,10 +91,20 @@ export class PeerWrapper {
         });
     }
 
-    public broadcast(data: any): void {
+    public broadcast(data: Message): void {
         this.conns.forEach((conn) => {
             conn.send(data);
         })
+    }
+
+    public sendTo(peerId: string, data: Message): void {
+        const conn = this.conns.get(peerId);
+        if (conn) {
+            console.log(`Sending to ${peerId}:`, data);
+            conn.send(data);
+        } else {
+            console.warn(`No connection found for peer: ${peerId}. Available connections:`, Array.from(this.conns.keys()));
+        }
     }
 
     public disconnect(): void {
