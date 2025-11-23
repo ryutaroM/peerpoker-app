@@ -40,5 +40,8 @@
 		"vite": "^7.1.10",
 		"vitest": "^4.0.5",
 		"wrangler": "^4.50.0"
+	},
+	"dependencies": {
+		"peerjs": "^1.5.5"
 	}
 }
