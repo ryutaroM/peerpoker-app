@@ -3,6 +3,7 @@
 	import GameState from '$lib/component/GameState.svelte';
 	import ConnectionPanel from '$lib/component/ConnectionPanel.svelte';
 	import ParticipantCard from '$lib/component/ParticipantCard.svelte';
+	import VoteCards from '$lib/component/VoteCards.svelte';
 	import type { PeerId, Participant } from '$lib/types';
 
 	interface GameStateContext {
@@ -65,6 +66,8 @@
 						}}
 						onConnect={() => state.connectToOpponent(opponentId)}
 					/>
+
+					<VoteCards />
 
 					<div class="game-area">
 						<h2>参加者: {state.participants.size}</h2>
