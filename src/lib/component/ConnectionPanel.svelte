@@ -3,27 +3,36 @@
 		peerId,
 		opponentId = $bindable(''),
 		onShareLink,
-		onConnect
+		onConnect,
+		isConnecting = false
 	}: {
 		peerId: string;
 		opponentId: string;
 		onShareLink: () => void;
 		onConnect: () => void;
+		isConnecting?: boolean;
 	} = $props();
 </script>
 
 <div class="connection-panel">
-	<button onclick={onShareLink} class="share-btn">🔗 Share Link</button>
-	<div class="id-display">
-		<span>Your ID:</span>
-		<code>{peerId}</code>
-	</div>
+	{#if isConnecting}
+		<div class="loading">
+			<p class="loading-text">Connecting to signaling server<span class="dots"></span></p>
+			<div class="spinner"></div>
+		</div>
+	{:else}
+		<button onclick={onShareLink} class="share-btn">🔗 Share Link</button>
+		<div class="id-display">
+			<span>Your ID:</span>
+			<code>{peerId}</code>
+		</div>
 
-	<div class="connect-section">
-		<label for="opponentId">Opponent's ID</label>
-		<input id="opponentId" type="text" placeholder="Opponent's ID" bind:value={opponentId} />
-		<button onclick={onConnect} class="connect-btn" disabled={!opponentId}> Connect </button>
-	</div>
+		<div class="connect-section">
+			<label for="opponentId">Opponent's ID</label>
+			<input id="opponentId" type="text" placeholder="Opponent's ID" bind:value={opponentId} />
+			<button onclick={onConnect} class="connect-btn" disabled={!opponentId}> Connect </button>
+		</div>
+	{/if}
 </div>
 
 <style>
@@ -127,6 +136,58 @@
 
 		.connect-section input {
 			min-width: 100%;
+		}
+	}
+
+	.loading {
+		text-align: center;
+		padding: 2rem;
+	}
+
+	.loading-text {
+		font-size: 1.2rem;
+		color: #667eea;
+		margin-bottom: 1rem;
+	}
+
+	.dots::after {
+		content: '';
+		animation: dots 1.5s steps(4, end) infinite;
+	}
+
+	@keyframes dots {
+		0%,
+		20% {
+			content: '';
+		}
+		40% {
+			content: '.';
+		}
+		60% {
+			content: '..';
+		}
+		80%,
+		100% {
+			content: '...';
+		}
+	}
+
+	.spinner {
+		width: 40px;
+		height: 40px;
+		margin: 0 auto;
+		border: 4px solid #f3f3f3;
+		border-top: 4px solid #667eea;
+		border-radius: 50%;
+		animation: spin 1s linear infinite;
+	}
+
+	@keyframes spin {
+		0% {
+			transform: rotate(0deg);
+		}
+		100% {
+			transform: rotate(360deg);
 		}
 	}
 </style>

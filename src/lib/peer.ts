@@ -13,7 +13,8 @@ export class PeerWrapper {
         private peerId: string,
         private onData: (peerId: string, data: Message) => void,
         private onPeerConnected: (peerId: string) => void,
-        private onPeerDisconnected: (peerId: string) => void
+        private onPeerDisconnected: (peerId: string) => void,
+        private onServerConnected?: () => void
     ) { }
 
     public connect(): void {
@@ -27,6 +28,7 @@ export class PeerWrapper {
         this.peer.on("open", (id) => {
             console.log(`Peer connected with ID: ${id}`);
             this.reconnectAttempts = 0; // Reset on successful connection
+            this.onServerConnected?.();
         });
 
         this.peer.on("connection", (conn) => {

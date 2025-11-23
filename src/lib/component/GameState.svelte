@@ -9,6 +9,7 @@
 	let participants = $state<Map<PeerId, Participant>>(new Map());
 	let isRevealed = $state<boolean>(false);
 	let isConnected = $state<boolean>(false);
+	let isConnecting = $state<boolean>(false);
 	let peerWrapper: PeerWrapper | null = null;
 
 	const gameState = {
@@ -30,18 +31,24 @@
 		get isConnected() {
 			return isConnected;
 		},
+		get isConnecting() {
+			return isConnecting;
+		},
 
 		startGame: (name: string) => {
 			playerName = name;
 			const myIcon = getRandomHeroIcon();
+			isConnected = false;
+			isConnecting = true;
+
 			peerWrapper = new PeerWrapper(
 				peerId,
 				handleData,
 				handlePeerConnected,
-				handlePeerDisconnected
+				handlePeerDisconnected,
+				handleServerConnected
 			);
 			peerWrapper.connect();
-			isConnected = true;
 
 			participants.set(peerId, {
 				name: name,
@@ -102,6 +109,12 @@
 	};
 
 	setContext('gameState', gameState);
+
+	function handleServerConnected() {
+		console.log('Connected to server');
+		isConnecting = false;
+		isConnected = true;
+	}
 
 	function handleData(id: string, data: Message) {
 		console.log(`Received data from ${id}:`, data);
