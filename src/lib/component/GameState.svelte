@@ -2,6 +2,7 @@
 	import { PeerWrapper } from '$lib/peer';
 	import type { Message, Participant, PeerId } from '$lib/types';
 	import { onMount, setContext } from 'svelte';
+	import { getRandomHeroIcon } from '$lib/icons';
 
 	let peerId = $state<string>('');
 	let playerName = $state<string>('');
@@ -32,6 +33,7 @@
 
 		startGame: (name: string) => {
 			playerName = name;
+			const myIcon = getRandomHeroIcon();
 			peerWrapper = new PeerWrapper(
 				peerId,
 				handleData,
@@ -43,7 +45,8 @@
 
 			participants.set(peerId, {
 				name: name,
-				hasVoted: false
+				hasVoted: false,
+				icon: myIcon
 			});
 		},
 
@@ -111,12 +114,16 @@
 				if (!newParticipants.has(participantId)) {
 					newParticipants.set(participantId, {
 						name: data.payload?.name || 'Unknown',
-						hasVoted: false
+						hasVoted: false,
+						icon: data.payload?.icon
 					});
 				} else {
 					const participant = newParticipants.get(participantId);
 					if (participant && data.payload?.name) {
 						participant.name = data.payload.name;
+					}
+					if (participant && data.payload?.icon) {
+						participant.icon = data.payload.icon;
 					}
 				}
 				break;
@@ -155,7 +162,7 @@
 					type: 'join',
 					senderId: participantId,
 					timestamp: Date.now(),
-					payload: { name: participant.name }
+					payload: { name: participant.name, icon: participant.icon }
 				};
 				console.log(`Sending participant info to ${id}:`, message);
 				peerWrapper!.sendTo(id, message);
@@ -165,7 +172,8 @@
 		const newParticipants = new Map(participants);
 		newParticipants.set(id, {
 			name: 'Connecting...',
-			hasVoted: false
+			hasVoted: false,
+			icon: undefined
 		});
 		participants = newParticipants;
 	}

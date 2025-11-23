@@ -13,6 +13,7 @@ export interface Participant {
     name: string;
     vote?: Vote;
     hasVoted: boolean;
+    icon?: string;
 }
 
 export interface Message {
@@ -22,6 +23,7 @@ export interface Message {
     payload?: {
         name?: string;
         vote?: Vote;
+        icon?: string;
     }
 }
 

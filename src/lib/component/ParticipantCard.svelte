@@ -11,6 +11,11 @@
 </script>
 
 <div class="participant-card">
+	{#if participant.icon}
+		<div class="icon">
+			{@html participant.icon}
+		</div>
+	{/if}
 	<p class="name">{participant.name}</p>
 	<p class="vote">
 		{#if isRevealed}
@@ -34,6 +39,12 @@
 	.participant-card:hover {
 		border-color: #667eea;
 		box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+	}
+
+	.icon {
+		width: 60px;
+		height: 60px;
+		margin: 0 auto 0.5rem;
 	}
 
 	.participant-card .name {
