@@ -9,7 +9,12 @@
 	header {
 		background-color: var(--color-primary);
 		color: white;
-		padding: 1rem;
-		text-align: center;
+		padding: 1.5rem 2rem;
+		text-align: left;
+	}
+
+	h1 {
+		margin: 0;
+		font-size: 1.5rem;
 	}
 </style>

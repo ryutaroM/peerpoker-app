@@ -19,7 +19,7 @@
 	<p class="name">{participant.name}</p>
 	<p class="vote">
 		{#if isRevealed}
-			{participant.vote || '-'}
+			{participant.vote !== undefined ? participant.vote : '-'}
 		{:else}
 			{participant.hasVoted ? '✓' : '-'}
 		{/if}

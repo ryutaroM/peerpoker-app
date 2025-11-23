@@ -13,11 +13,11 @@
 </script>
 
 <div class="connection-panel">
+	<button onclick={onShareLink} class="share-btn">🔗 Share Link</button>
 	<div class="id-display">
 		<span>Your ID:</span>
 		<code>{peerId}</code>
 	</div>
-	<button onclick={onShareLink} class="share-btn">🔗 Share Link</button>
 
 	<div class="connect-section">
 		<label for="opponentId">Opponent's ID</label>
