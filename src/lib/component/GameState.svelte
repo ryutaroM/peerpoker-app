@@ -161,8 +161,12 @@
 			case 'peer-joined': {
 				const newPeerId = data.payload?.peerId;
 				if (newPeerId && newPeerId !== peerId && peerWrapper) {
-					console.log(`Auto-connecting to new peer: ${newPeerId}`);
-					peerWrapper.connectTo(newPeerId);
+					if (!participants.has(newPeerId)) {
+						console.log(`Auto-connecting to new peer: ${newPeerId}`);
+						peerWrapper.connectTo(newPeerId);
+					} else {
+						console.log(`Already connected to ${newPeerId}, skipping`);
+					}
 				}
 				break;
 			}
