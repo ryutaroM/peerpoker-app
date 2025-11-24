@@ -111,19 +111,6 @@ export class PeerWrapper {
     private setupConnection(conn: DataConnection): void {
         console.log('setupConnection called for peer:', conn.peer);
 
-        // 既に接続されている場合はすぐに処理
-        if (conn.open) {
-            console.log('Connection already open');
-            this.conns.set(conn.peer, conn);
-            this.onPeerConnected(conn.peer);
-        } else {
-            conn.on("open", () => {
-                console.log(`Connected to peer: ${conn.peer}`);
-                this.conns.set(conn.peer, conn);
-                this.onPeerConnected(conn.peer);
-            });
-        }
-
         conn.on("data", (data: unknown) => {
             if (data && typeof data === 'object' && 'type' in data && 'senderId' in data) {
                 this.onData(conn.peer, data as Message);
@@ -141,6 +128,19 @@ export class PeerWrapper {
         conn.on("error", (e) => {
             console.error(`Connection error with peer ${conn.peer}: ${e}`);
         });
+
+        // 既に接続されている場合はすぐに処理
+        if (conn.open) {
+            console.log('Connection already open');
+            this.conns.set(conn.peer, conn);
+            this.onPeerConnected(conn.peer);
+        } else {
+            conn.on("open", () => {
+                console.log(`Connected to peer: ${conn.peer}`);
+                this.conns.set(conn.peer, conn);
+                this.onPeerConnected(conn.peer);
+            });
+        }
     }
 
     private attemptReconnect(): void {

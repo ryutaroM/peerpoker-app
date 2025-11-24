@@ -135,6 +135,18 @@
 						hasVoted: false,
 						icon: data.payload?.icon
 					});
+
+					const myInfo = participants.get(peerId);
+					if (myInfo && peerWrapper) {
+						const myMessage: Message = {
+							type: 'join',
+							senderId: peerId,
+							timestamp: Date.now(),
+							payload: { name: myInfo.name, icon: myInfo.icon }
+						};
+						console.log(`Replying with my info to ${participantId}`);
+						peerWrapper.sendTo(participantId, myMessage);
+					}
 				} else {
 					const participant = newParticipants.get(participantId);
 					if (participant && data.payload?.name) {
@@ -143,6 +155,14 @@
 					if (participant && data.payload?.icon) {
 						participant.icon = data.payload.icon;
 					}
+				}
+				break;
+			}
+			case 'peer-joined': {
+				const newPeerId = data.payload?.peerId;
+				if (newPeerId && newPeerId !== peerId && peerWrapper) {
+					console.log(`Auto-connecting to new peer: ${newPeerId}`);
+					peerWrapper.connectTo(newPeerId);
 				}
 				break;
 			}
@@ -175,19 +195,7 @@
 		console.log(`Peer connected: ${id}`);
 		isConnectingToPeer = false; // Successfully connected to peer
 
-		if (peerWrapper) {
-			participants.forEach((participant, participantId) => {
-				const message: Message = {
-					type: 'join',
-					senderId: participantId,
-					timestamp: Date.now(),
-					payload: { name: participant.name, icon: participant.icon }
-				};
-				console.log(`Sending participant info to ${id}:`, message);
-				peerWrapper!.sendTo(id, message);
-			});
-		}
-
+		// ★ 新しいピアをローカルに追加（最初に）
 		const newParticipants = new Map(participants);
 		newParticipants.set(id, {
 			name: 'Connecting...',
@@ -195,6 +203,31 @@
 			icon: undefined
 		});
 		participants = newParticipants;
+
+		if (peerWrapper) {
+			// ★ 自分の情報だけを新しいピアに送信
+			const myInfo = participants.get(peerId);
+			if (myInfo) {
+				const myMessage: Message = {
+					type: 'join',
+					senderId: peerId,
+					timestamp: Date.now(),
+					payload: { name: myInfo.name, icon: myInfo.icon }
+				};
+				console.log(`Sending my info to ${id}:`, myMessage);
+				peerWrapper.sendTo(id, myMessage);
+			}
+
+			// ★ 既存のピアに新しいピアを通知（broadcastは問題ない）
+			const newPeerMessage: Message = {
+				type: 'peer-joined',
+				senderId: peerId,
+				timestamp: Date.now(),
+				payload: { peerId: id }
+			};
+			console.log(`Notifying existing peers about new peer ${id}:`, newPeerMessage);
+			peerWrapper.broadcast(newPeerMessage);
+		}
 	}
 
 	function handlePeerDisconnected(id: string) {

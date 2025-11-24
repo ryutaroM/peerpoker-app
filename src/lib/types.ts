@@ -3,6 +3,7 @@ export type Vote = number | string;
 
 export type messageTypes =
     | "join" // when a player joins the game
+    | "peer-joined" // when a peer notifies that they have joined
     | "vote" // when a player votes for a porker
     | "reveal" // when the votes are revealed
     | "cancel" // when a player cancels their vote
@@ -24,6 +25,7 @@ export interface Message {
         name?: string;
         vote?: Vote;
         icon?: string;
+        peerId?: PeerId;
     }
 }
 
