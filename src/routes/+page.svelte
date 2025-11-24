@@ -54,7 +54,12 @@
 						disabled={!state.playerName}
 						class="primary-btn"
 					>
-						Start Game
+						{#if state.isConnecting}
+							<span class="dots"></span>
+							Connecting...
+						{:else}
+							Start Game
+						{/if}
 					</button>
 				</div>
 			{:else}
@@ -154,5 +159,27 @@
 		grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
 		gap: 1rem;
 		margin-top: 2rem;
+	}
+
+	.dots::after {
+		content: '';
+		animation: dots 1.5s steps(4, end) infinite;
+	}
+
+	@keyframes dots {
+		0%,
+		20% {
+			content: '';
+		}
+		40% {
+			content: '.';
+		}
+		60% {
+			content: '..';
+		}
+		80%,
+		100% {
+			content: '...';
+		}
 	}
 </style>
