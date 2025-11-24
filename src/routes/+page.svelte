@@ -56,8 +56,7 @@
 						class="primary-btn"
 					>
 						{#if state.isConnecting}
-							<span class="dots"></span>
-							Connecting...
+							Connecting<span class="dots"></span>
 						{:else}
 							Start Game
 						{/if}
