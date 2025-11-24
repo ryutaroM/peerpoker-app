@@ -10,6 +10,7 @@
 	let isRevealed = $state<boolean>(false);
 	let isConnected = $state<boolean>(false);
 	let isConnecting = $state<boolean>(false);
+	let isConnectingToPeer = $state<boolean>(false);
 	let peerWrapper: PeerWrapper | null = null;
 
 	const gameState = {
@@ -33,6 +34,9 @@
 		},
 		get isConnecting() {
 			return isConnecting;
+		},
+		get isConnectingToPeer() {
+			return isConnectingToPeer;
 		},
 
 		startGame: (name: string) => {
@@ -59,6 +63,7 @@
 
 		connectToOpponent: (opponentId: string) => {
 			if (!opponentId || !peerWrapper) return;
+			isConnectingToPeer = true; // Start connecting to peer
 			peerWrapper.connectTo(opponentId);
 		},
 
@@ -168,6 +173,7 @@
 
 	function handlePeerConnected(id: string) {
 		console.log(`Peer connected: ${id}`);
+		isConnectingToPeer = false; // Successfully connected to peer
 
 		if (peerWrapper) {
 			participants.forEach((participant, participantId) => {

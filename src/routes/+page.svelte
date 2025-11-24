@@ -15,6 +15,7 @@
 		isRevealed: boolean;
 		isConnected: boolean;
 		isConnecting: boolean;
+		isConnectingToPeer: boolean;
 		startGame: (name: string) => void;
 		connectToOpponent: (opponentId: string) => void;
 		vote: (value: string | number) => void;
@@ -68,6 +69,7 @@
 						peerId={state.peerId}
 						bind:opponentId
 						isConnecting={state.isConnecting}
+						isConnectingToPeer={state.isConnectingToPeer}
 						onShareLink={() => {
 							const url = `${window.location.origin}?connect_to=${state.peerId}`;
 							navigator.clipboard.writeText(url);

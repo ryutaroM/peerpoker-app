@@ -4,13 +4,15 @@
 		opponentId = $bindable(''),
 		onShareLink,
 		onConnect,
-		isConnecting = false
+		isConnecting = false,
+		isConnectingToPeer = false
 	}: {
 		peerId: string;
 		opponentId: string;
 		onShareLink: () => void;
 		onConnect: () => void;
 		isConnecting?: boolean;
+		isConnectingToPeer?: boolean;
 	} = $props();
 </script>
 
@@ -30,7 +32,13 @@
 		<div class="connect-section">
 			<label for="opponentId">Opponent's ID</label>
 			<input id="opponentId" type="text" placeholder="Opponent's ID" bind:value={opponentId} />
-			<button onclick={onConnect} class="connect-btn" disabled={!opponentId}> Connect </button>
+			<button onclick={onConnect} class="connect-btn" disabled={!opponentId || isConnectingToPeer}>
+				{#if isConnectingToPeer}
+					Connecting<span class="dots"></span>
+				{:else}
+					Connect
+				{/if}
+			</button>
 		</div>
 	{/if}
 </div>
