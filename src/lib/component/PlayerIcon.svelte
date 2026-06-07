@@ -3,13 +3,14 @@
 		icon?: string;
 		name?: string;
 		onClick?: () => void;
+		connectionStatus?: 'disconnected' | 'connecting' | 'connected';
 	}
 
-	let { icon, name, onClick }: Props = $props();
+	let { icon, name, onClick, connectionStatus = 'disconnected' }: Props = $props();
 </script>
 
 <button class="player-icon" onclick={onClick}>
-	<div class="icon-container">
+	<div class="icon-container" class:connecting={connectionStatus === 'connecting'} class:connected={connectionStatus === 'connected'}>
 		{#if icon}
 			{@html icon}
 		{:else}
@@ -62,6 +63,30 @@
 		transform: translateY(-2px);
 	}
 
+	/* 接続中の状態 */
+	.icon-container.connecting {
+		border-color: #fbbf24;
+		border-width: 4px;
+		box-shadow: 0 8px 20px rgba(251, 191, 36, 0.4);
+		animation: pulse 2s ease-in-out infinite;
+	}
+
+	/* 接続済みの状態 */
+	.icon-container.connected {
+		border-color: #10b981;
+		border-width: 4px;
+		box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+	}
+
+	@keyframes pulse {
+		0%, 100% {
+			box-shadow: 0 8px 20px rgba(251, 191, 36, 0.4);
+		}
+		50% {
+			box-shadow: 0 8px 30px rgba(251, 191, 36, 0.7);
+		}
+	}
+
 	.icon-container :global(svg) {
 		width: 100%;
 		height: 100%;
@@ -98,6 +123,11 @@
 			height: 80px;
 			padding: 10px;
 			border: 2px solid rgba(255, 255, 255, 0.6);
+		}
+
+		.icon-container.connecting,
+		.icon-container.connected {
+			border-width: 3px;
 		}
 
 		.placeholder-icon {

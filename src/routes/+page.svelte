@@ -48,6 +48,7 @@
 <GameState>
 	{#snippet children()}
 		{@const state = getContext<GameStateContext>('gameState')}
+		{@const connectionStatus = state.isConnectingToPeer ? 'connecting' : state.participants.size > 0 ? 'connected' : 'disconnected'}
 
 		<div class="container">
 			{#if !state.isConnected}
@@ -58,6 +59,7 @@
 							icon={state.playerIcon}
 							name={state.playerName}
 							onClick={() => (showActionMenu = !showActionMenu)}
+							{connectionStatus}
 						/>
 						{#if showActionMenu}
 							<div class="action-menu action-menu-right">
@@ -133,6 +135,7 @@
 								icon={state.playerIcon}
 								name={state.playerName}
 								onClick={() => (showActionMenuInGame = !showActionMenuInGame)}
+								{connectionStatus}
 							/>
 							{#if showActionMenuInGame}
 								<!-- 左側メニュー: Share Link, Your ID -->
