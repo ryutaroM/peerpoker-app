@@ -6,11 +6,16 @@
 
 	let peerId = $state<string>('');
 	let playerName = $state<string>('');
+	let playerIcon = $state<string>('');
+	let hasName = $state<boolean>(false);
 	let participants = $state<Map<PeerId, Participant>>(new Map());
 	let isRevealed = $state<boolean>(false);
 	let isConnected = $state<boolean>(false);
 	let isConnecting = $state<boolean>(false);
 	let isConnectingToPeer = $state<boolean>(false);
+	let isServerStarting = $state<boolean>(false);
+	let connectionStartTime: number | null = null;
+	let serverStartCheckTimer: ReturnType<typeof setTimeout> | null = null;
 	let peerWrapper: PeerWrapper | null = null;
 
 	const gameState = {
@@ -22,6 +27,12 @@
 		},
 		set playerName(value: string) {
 			playerName = value;
+		},
+		get playerIcon() {
+			return playerIcon;
+		},
+		get hasName() {
+			return hasName;
 		},
 		get participants() {
 			return participants;
@@ -38,12 +49,60 @@
 		get isConnectingToPeer() {
 			return isConnectingToPeer;
 		},
+		get isServerStarting() {
+			return isServerStarting;
+		},
+
+		setPlayerName: (name: string) => {
+			playerName = name;
+			hasName = true;
+		},
+
+		connectToServer: () => {
+			isConnected = false;
+			isConnecting = true;
+			isServerStarting = false;
+			connectionStartTime = Date.now();
+
+			// 5秒経過後にサーバー起動中状態にする
+			if (serverStartCheckTimer) clearTimeout(serverStartCheckTimer);
+			serverStartCheckTimer = setTimeout(() => {
+				if (isConnecting && !isConnected) {
+					isServerStarting = true;
+				}
+			}, 5000);
+
+			peerWrapper = new PeerWrapper(
+				peerId,
+				handleData,
+				handlePeerConnected,
+				handlePeerDisconnected,
+				handleServerConnected
+			);
+			peerWrapper.connect();
+
+			participants.set(peerId, {
+				name: playerName,
+				hasVoted: false,
+				icon: playerIcon
+			});
+		},
 
 		startGame: (name: string) => {
 			playerName = name;
 			const myIcon = getRandomHeroIcon();
 			isConnected = false;
 			isConnecting = true;
+			isServerStarting = false;
+			connectionStartTime = Date.now();
+
+			// 5秒経過後にサーバー起動中状態にする
+			if (serverStartCheckTimer) clearTimeout(serverStartCheckTimer);
+			serverStartCheckTimer = setTimeout(() => {
+				if (isConnecting && !isConnected) {
+					isServerStarting = true;
+				}
+			}, 5000);
 
 			peerWrapper = new PeerWrapper(
 				peerId,
@@ -117,8 +176,19 @@
 
 	function handleServerConnected() {
 		console.log('Connected to server');
+		if (serverStartCheckTimer) {
+			clearTimeout(serverStartCheckTimer);
+			serverStartCheckTimer = null;
+		}
 		isConnecting = false;
 		isConnected = true;
+		isServerStarting = false;
+
+		if (connectionStartTime) {
+			const connectionTime = Date.now() - connectionStartTime;
+			console.log(`Connection established in ${connectionTime}ms`);
+			connectionStartTime = null;
+		}
 	}
 
 	function handleData(id: string, data: Message) {
@@ -243,8 +313,12 @@
 
 	onMount(() => {
 		peerId = crypto.randomUUID();
+		playerIcon = getRandomHeroIcon();
 
 		return () => {
+			if (serverStartCheckTimer) {
+				clearTimeout(serverStartCheckTimer);
+			}
 			peerWrapper?.disconnect();
 		};
 	});
