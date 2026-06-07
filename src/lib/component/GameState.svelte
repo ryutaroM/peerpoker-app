@@ -6,6 +6,8 @@
 
 	let peerId = $state<string>('');
 	let playerName = $state<string>('');
+	let playerIcon = $state<string>('');
+	let hasName = $state<boolean>(false);
 	let participants = $state<Map<PeerId, Participant>>(new Map());
 	let isRevealed = $state<boolean>(false);
 	let isConnected = $state<boolean>(false);
@@ -23,6 +25,12 @@
 		set playerName(value: string) {
 			playerName = value;
 		},
+		get playerIcon() {
+			return playerIcon;
+		},
+		get hasName() {
+			return hasName;
+		},
 		get participants() {
 			return participants;
 		},
@@ -37,6 +45,31 @@
 		},
 		get isConnectingToPeer() {
 			return isConnectingToPeer;
+		},
+
+		setPlayerName: (name: string) => {
+			playerName = name;
+			hasName = true;
+		},
+
+		connectToServer: () => {
+			isConnected = false;
+			isConnecting = true;
+
+			peerWrapper = new PeerWrapper(
+				peerId,
+				handleData,
+				handlePeerConnected,
+				handlePeerDisconnected,
+				handleServerConnected
+			);
+			peerWrapper.connect();
+
+			participants.set(peerId, {
+				name: playerName,
+				hasVoted: false,
+				icon: playerIcon
+			});
 		},
 
 		startGame: (name: string) => {
@@ -243,6 +276,7 @@
 
 	onMount(() => {
 		peerId = crypto.randomUUID();
+		playerIcon = getRandomHeroIcon();
 
 		return () => {
 			peerWrapper?.disconnect();

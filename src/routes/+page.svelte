@@ -6,16 +6,23 @@
 	import VoteCards from '$lib/component/VoteCards.svelte';
 	import GameControls from '$lib/component/GameControls.svelte';
 	import ResultBanner from '$lib/component/ResultBanner.svelte';
+	import PlayerIcon from '$lib/component/PlayerIcon.svelte';
+	import NameSettingDialog from '$lib/component/NameSettingDialog.svelte';
+	import ConnectionDialog from '$lib/component/ConnectionDialog.svelte';
 	import type { PeerId, Participant } from '$lib/types';
 
 	interface GameStateContext {
 		peerId: string;
 		playerName: string;
+		playerIcon: string;
+		hasName: boolean;
 		participants: Map<PeerId, Participant>;
 		isRevealed: boolean;
 		isConnected: boolean;
 		isConnecting: boolean;
 		isConnectingToPeer: boolean;
+		setPlayerName: (name: string) => void;
+		connectToServer: () => void;
 		startGame: (name: string) => void;
 		connectToOpponent: (opponentId: string) => void;
 		vote: (value: string | number) => void;
@@ -24,6 +31,8 @@
 	}
 
 	let opponentId = $state('');
+	let showNameDialog = $state(false);
+	let showConnectionDialog = $state(false);
 
 	onMount(() => {
 		const url = new URLSearchParams(window.location.search);
@@ -40,28 +49,44 @@
 
 		<div class="container">
 			{#if !state.isConnected}
-				<div class="setup-form">
-					<div class="form-group">
-						<label for="playerName">Player Name</label>
-						<input
-							id="playerName"
-							type="text"
-							placeholder="Enter your name"
-							bind:value={state.playerName}
-						/>
-					</div>
-					<button
-						onclick={() => state.startGame(state.playerName)}
-						disabled={!state.playerName}
-						class="primary-btn"
-					>
-						{#if state.isConnecting}
-							Connecting<span class="dots"></span>
-						{:else}
-							Start Game
-						{/if}
-					</button>
+				<div class="setup-screen">
+					<h1 class="title">Planning Poker</h1>
+					<PlayerIcon
+						icon={state.playerIcon}
+						label={state.hasName ? 'サーバーに接続' : '名前を設定してください'}
+						disabled={state.isConnecting}
+						onClick={() => {
+							if (!state.hasName) {
+								showNameDialog = true;
+							} else {
+								showConnectionDialog = true;
+							}
+						}}
+					/>
 				</div>
+
+				<NameSettingDialog
+					bind:isOpen={showNameDialog}
+					initialName={state.playerName}
+					onSave={(name) => {
+						state.setPlayerName(name);
+						showNameDialog = false;
+					}}
+					onCancel={() => {
+						showNameDialog = false;
+					}}
+				/>
+
+				<ConnectionDialog
+					bind:isOpen={showConnectionDialog}
+					isConnecting={state.isConnecting}
+					onConnect={() => {
+						state.connectToServer();
+					}}
+					onCancel={() => {
+						showConnectionDialog = false;
+					}}
+				/>
 			{:else}
 				<div class="game-container">
 					<ConnectionPanel
@@ -86,7 +111,7 @@
 					<div class="game-area">
 						<h2>Participants: {state.participants.size}</h2>
 						<div class="participants">
-							{#each Array.from(state.participants.entries()) as [id, participant]}
+							{#each Array.from(state.participants.entries()) as [id, participant] (id)}
 								<ParticipantCard {participant} isRevealed={state.isRevealed} />
 							{/each}
 						</div>
@@ -104,51 +129,24 @@
 		padding: 2rem;
 	}
 
-	.setup-form {
+	.setup-screen {
 		display: flex;
 		flex-direction: column;
-		gap: 1rem;
-		max-width: 400px;
-		margin: 0 auto;
+		align-items: center;
+		justify-content: center;
+		min-height: 60vh;
+		gap: 2rem;
 	}
 
-	.form-group {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-	}
-
-	.form-group label {
-		font-weight: 600;
-	}
-
-	.setup-form input {
-		padding: 0.75rem;
-		border: 2px solid #ddd;
-		border-radius: 8px;
-		font-size: 1rem;
-	}
-
-	.primary-btn {
-		padding: 0.75rem 1.5rem;
-		border: none;
-		border-radius: 8px;
-		cursor: pointer;
-		font-size: 1rem;
-		font-weight: 600;
-		transition: all 0.3s ease;
-		background-color: #667eea;
-		color: white;
-	}
-
-	.primary-btn:hover:not(:disabled) {
-		background-color: #764ba2;
-		transform: translateY(-2px);
-	}
-
-	.primary-btn:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
+	.title {
+		font-size: 3rem;
+		font-weight: 700;
+		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		margin: 0;
+		text-align: center;
 	}
 
 	.game-area {
@@ -160,27 +158,5 @@
 		grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
 		gap: 1rem;
 		margin-top: 2rem;
-	}
-
-	.dots::after {
-		content: '';
-		animation: dots 1.5s steps(4, end) infinite;
-	}
-
-	@keyframes dots {
-		0%,
-		20% {
-			content: '';
-		}
-		40% {
-			content: '.';
-		}
-		60% {
-			content: '..';
-		}
-		80%,
-		100% {
-			content: '...';
-		}
 	}
 </style>
