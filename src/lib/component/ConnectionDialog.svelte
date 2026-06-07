@@ -37,7 +37,7 @@
 						<div class="status-text server-starting">
 							<div class="status-title">🚀 サーバー起動中</div>
 							<div class="status-subtitle">
-								無料プランのサーバーが起動しています...<br />
+								サーバーが起動しています...<br />
 								初回接続時は30秒〜1分程度かかる場合があります
 							</div>
 						</div>
