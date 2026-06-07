@@ -86,4 +86,28 @@
 		border-radius: 12px;
 		min-width: 150px;
 	}
+
+	/* 超小型スマホ対応 */
+	@media (max-width: 400px) {
+		.player-icon {
+			gap: 0.5rem;
+		}
+
+		.icon-container {
+			width: 80px;
+			height: 80px;
+			padding: 10px;
+			border: 2px solid rgba(255, 255, 255, 0.6);
+		}
+
+		.placeholder-icon {
+			font-size: 2rem;
+		}
+
+		.name-display {
+			font-size: 1rem;
+			padding: 0.25rem 0.5rem;
+			min-width: 80px;
+		}
+	}
 </style>
