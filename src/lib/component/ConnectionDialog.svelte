@@ -43,7 +43,7 @@
 						</div>
 					{:else}
 						<div class="status-text">
-							<div class="status-title">接続中<span class="dots"></span></div>
+							<div class="status-title">接続中 <span class="inline-spinner"></span></div>
 							<div class="status-subtitle">サーバーに接続しています</div>
 						</div>
 					{/if}
@@ -59,7 +59,7 @@
 				</button>
 				<button class="primary-btn" onclick={onConnect} disabled={isConnecting}>
 					{#if isConnecting}
-						接続中<span class="dots"></span>
+						接続中 <span class="inline-spinner"></span>
 					{:else}
 						接続開始
 					{/if}
@@ -174,26 +174,15 @@
 		cursor: not-allowed;
 	}
 
-	.dots::after {
-		content: '';
-		animation: dots 1.5s steps(4, end) infinite;
-	}
-
-	@keyframes dots {
-		0%,
-		20% {
-			content: '';
-		}
-		40% {
-			content: '.';
-		}
-		60% {
-			content: '..';
-		}
-		80%,
-		100% {
-			content: '...';
-		}
+	.inline-spinner {
+		display: inline-block;
+		width: 14px;
+		height: 14px;
+		border: 2px solid rgba(102, 126, 234, 0.3);
+		border-top-color: #667eea;
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+		vertical-align: middle;
 	}
 
 	.connection-status {

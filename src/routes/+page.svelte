@@ -82,7 +82,7 @@
 									<span class="menu-icon">🎮</span>
 									<span class="menu-text">
 										{#if state.isConnecting}
-											接続中<span class="dots"></span>
+											接続中 <span class="spinner"></span>
 										{:else}
 											ゲーム開始
 										{/if}
@@ -177,7 +177,7 @@
 												disabled={!opponentId || state.isConnectingToPeer}
 											>
 												{#if state.isConnectingToPeer}
-													Connecting<span class="dots"></span>
+													Connecting <span class="spinner"></span>
 												{:else}
 													Connect
 												{/if}
@@ -353,25 +353,19 @@
 		transform: none;
 	}
 
-	.dots::after {
-		content: '';
-		animation: dots 1.5s steps(4, end) infinite;
+	.spinner {
+		display: inline-block;
+		width: 14px;
+		height: 14px;
+		border: 2px solid rgba(255, 255, 255, 0.3);
+		border-top-color: #fff;
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
 	}
 
-	@keyframes dots {
-		0%,
-		20% {
-			content: '';
-		}
-		40% {
-			content: '.';
-		}
-		60% {
-			content: '..';
-		}
-		80%,
-		100% {
-			content: '...';
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
 		}
 	}
 
