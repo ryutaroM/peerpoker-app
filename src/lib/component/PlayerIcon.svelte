@@ -1,15 +1,14 @@
 <script lang="ts">
 	interface Props {
 		icon?: string;
-		label?: string;
-		disabled?: boolean;
+		name?: string;
 		onClick?: () => void;
 	}
 
-	let { icon, label = 'Click to start', disabled = false, onClick }: Props = $props();
+	let { icon, name, onClick }: Props = $props();
 </script>
 
-<button class="player-icon" {disabled} onclick={onClick}>
+<button class="player-icon" onclick={onClick}>
 	<div class="icon-container">
 		{#if icon}
 			{@html icon}
@@ -17,8 +16,8 @@
 			<div class="placeholder-icon">?</div>
 		{/if}
 	</div>
-	{#if label}
-		<div class="label">{label}</div>
+	{#if name}
+		<div class="name-display">{name}</div>
 	{/if}
 </button>
 
@@ -28,57 +27,60 @@
 		flex-direction: column;
 		align-items: center;
 		gap: 1rem;
-		padding: 2rem;
-		border: 3px solid #667eea;
-		border-radius: 16px;
-		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+		background: none;
+		border: none;
 		cursor: pointer;
-		transition: all 0.3s ease;
-		color: white;
-		max-width: 300px;
-		margin: 0 auto;
+		padding: 0;
+		transition: transform 0.2s ease;
 	}
 
-	.player-icon:hover:not(:disabled) {
-		transform: scale(1.05) translateY(-5px);
-		box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+	.player-icon:hover {
+		transform: scale(1.05);
 	}
 
-	.player-icon:active:not(:disabled) {
+	.player-icon:active {
 		transform: scale(0.98);
 	}
 
-	.player-icon:disabled {
-		opacity: 0.6;
-		cursor: not-allowed;
-	}
-
 	.icon-container {
-		width: 120px;
-		height: 120px;
-		background: white;
+		width: 150px;
+		height: 150px;
+		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 		border-radius: 50%;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+		box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+		padding: 15px;
+		transition: box-shadow 0.2s ease;
+	}
+
+	.player-icon:hover .icon-container {
+		box-shadow: 0 12px 30px rgba(102, 126, 234, 0.5);
 	}
 
 	.icon-container :global(svg) {
-		width: 80%;
-		height: 80%;
+		width: 100%;
+		height: 100%;
+		background: white;
+		border-radius: 50%;
+		padding: 15%;
 	}
 
 	.placeholder-icon {
 		font-size: 3rem;
 		font-weight: bold;
-		color: #667eea;
+		color: white;
 	}
 
-	.label {
-		font-size: 1.2rem;
-		font-weight: 600;
+	.name-display {
+		font-size: 1.3rem;
+		font-weight: 700;
 		text-align: center;
-		text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+		color: #333;
+		padding: 0.5rem 1rem;
+		background: rgba(102, 126, 234, 0.1);
+		border-radius: 12px;
+		min-width: 150px;
 	}
 </style>
