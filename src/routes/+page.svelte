@@ -82,7 +82,7 @@
 									<span class="menu-icon">🎮</span>
 									<span class="menu-text">
 										{#if state.isConnecting}
-											接続中<span class="dots"></span>
+											接続中 <span class="spinner"></span>
 										{:else}
 											ゲーム開始
 										{/if}
@@ -177,7 +177,7 @@
 												disabled={!opponentId || state.isConnectingToPeer}
 											>
 												{#if state.isConnectingToPeer}
-													Connecting<span class="dots"></span>
+													Connecting <span class="spinner"></span>
 												{:else}
 													Connect
 												{/if}
@@ -353,25 +353,19 @@
 		transform: none;
 	}
 
-	.dots::after {
-		content: '';
-		animation: dots 1.5s steps(4, end) infinite;
+	.spinner {
+		display: inline-block;
+		width: 14px;
+		height: 14px;
+		border: 2px solid rgba(255, 255, 255, 0.3);
+		border-top-color: #fff;
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
 	}
 
-	@keyframes dots {
-		0%,
-		20% {
-			content: '';
-		}
-		40% {
-			content: '.';
-		}
-		60% {
-			content: '..';
-		}
-		80%,
-		100% {
-			content: '...';
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
 		}
 	}
 
@@ -479,5 +473,112 @@
 		grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
 		gap: 1rem;
 		margin-top: 2rem;
+	}
+
+	/* スマホ対応 */
+	@media (max-width: 768px) {
+		.container {
+			padding: 1rem;
+		}
+
+		.title {
+			font-size: 2rem;
+		}
+
+		.action-menu {
+			min-width: 200px;
+			max-width: calc(100vw - 1.5rem);
+		}
+
+		/* スマホでは左右のメニューを下方向に配置 */
+		.action-menu-left,
+		.action-menu-right {
+			top: calc(100% + 0.5rem);
+			left: 50%;
+			right: auto;
+			transform: translateX(-50%);
+			animation: slideInDown 0.2s ease;
+		}
+
+		/* 右側メニューは左側メニューの下に配置 */
+		.action-menu-right {
+			margin-top: 0.5rem;
+		}
+
+		@keyframes slideInDown {
+			from {
+				opacity: 0;
+				transform: translateX(-50%) translateY(-10px);
+			}
+			to {
+				opacity: 1;
+				transform: translateX(-50%) translateY(0);
+			}
+		}
+
+		.menu-item {
+			padding: 0.75rem 1rem;
+		}
+
+		.id-code {
+			font-size: 0.75rem;
+		}
+	}
+
+	/* 超小型スマホ対応（iPhone SE等） */
+	@media (max-width: 400px) {
+		.container {
+			padding: 0.75rem;
+		}
+
+		.title {
+			font-size: 1.75rem;
+		}
+
+		.action-menu {
+			min-width: 140px;
+		}
+
+		/* 左右配置に戻す */
+		.action-menu-left,
+		.action-menu-right {
+			top: 50%;
+			left: auto;
+			transform: translateY(-50%);
+			animation: none;
+		}
+
+		.action-menu-left {
+			right: calc(100% + 0.75rem);
+		}
+
+		.action-menu-right {
+			left: calc(100% + 0.75rem);
+			margin-top: 0;
+		}
+
+		.menu-item {
+			padding: 0.625rem 0.875rem;
+			font-size: 0.9rem;
+		}
+
+		.menu-icon {
+			font-size: 1.2rem;
+		}
+
+		.id-code {
+			font-size: 0.7rem;
+			padding: 0.375rem;
+		}
+
+		.opponent-input {
+			font-size: 0.85rem;
+			padding: 0.375rem;
+		}
+
+		.connect-button {
+			font-size: 0.85rem;
+			padding: 0.375rem 0.75rem;
+		}
 	}
 </style>

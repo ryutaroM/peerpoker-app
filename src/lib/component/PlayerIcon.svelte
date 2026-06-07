@@ -52,11 +52,14 @@
 		justify-content: center;
 		box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
 		padding: 15px;
-		transition: box-shadow 0.2s ease;
+		border: 3px solid rgba(255, 255, 255, 0.6);
+		transition: all 0.2s ease;
 	}
 
 	.player-icon:hover .icon-container {
 		box-shadow: 0 12px 30px rgba(102, 126, 234, 0.5);
+		border-color: rgba(255, 255, 255, 1);
+		transform: translateY(-2px);
 	}
 
 	.icon-container :global(svg) {
@@ -82,5 +85,29 @@
 		background: rgba(102, 126, 234, 0.1);
 		border-radius: 12px;
 		min-width: 150px;
+	}
+
+	/* 超小型スマホ対応 */
+	@media (max-width: 400px) {
+		.player-icon {
+			gap: 0.5rem;
+		}
+
+		.icon-container {
+			width: 80px;
+			height: 80px;
+			padding: 10px;
+			border: 2px solid rgba(255, 255, 255, 0.6);
+		}
+
+		.placeholder-icon {
+			font-size: 2rem;
+		}
+
+		.name-display {
+			font-size: 1rem;
+			padding: 0.25rem 0.5rem;
+			min-width: 80px;
+		}
 	}
 </style>

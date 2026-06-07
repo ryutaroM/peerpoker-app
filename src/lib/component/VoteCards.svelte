@@ -71,4 +71,35 @@
 		border-color: var(--color-primary);
 		transform: translateY(-4px);
 	}
+
+	/* 超小型スマホ対応 */
+	@media (max-width: 400px) {
+		.vote-cards {
+			margin: 1.5rem 0;
+		}
+
+		.vote-cards h3 {
+			font-size: 1rem;
+			margin-bottom: 0.75rem;
+		}
+
+		.cards {
+			gap: 0.375rem;
+		}
+
+		.vote-card {
+			width: 50px;
+			height: 70px;
+			font-size: 1.25rem;
+			border-radius: 6px;
+		}
+
+		.vote-card:hover {
+			transform: translateY(-2px);
+		}
+
+		.vote-card.selected {
+			transform: translateY(-2px);
+		}
+	}
 </style>

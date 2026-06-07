@@ -19,7 +19,7 @@
 <div class="connection-panel">
 	{#if isConnecting}
 		<div class="loading">
-			<p class="loading-text">Connecting to signaling server<span class="dots"></span></p>
+			<p class="loading-text">Connecting to signaling server <span class="inline-spinner"></span></p>
 			<div class="spinner"></div>
 		</div>
 	{:else}
@@ -34,7 +34,7 @@
 			<input id="opponentId" type="text" placeholder="Opponent's ID" bind:value={opponentId} />
 			<button onclick={onConnect} class="connect-btn" disabled={!opponentId || isConnectingToPeer}>
 				{#if isConnectingToPeer}
-					Connecting<span class="dots"></span>
+					Connecting <span class="inline-spinner"></span>
 				{:else}
 					Connect
 				{/if}
@@ -158,26 +158,15 @@
 		margin-bottom: 1rem;
 	}
 
-	.dots::after {
-		content: '';
-		animation: dots 1.5s steps(4, end) infinite;
-	}
-
-	@keyframes dots {
-		0%,
-		20% {
-			content: '';
-		}
-		40% {
-			content: '.';
-		}
-		60% {
-			content: '..';
-		}
-		80%,
-		100% {
-			content: '...';
-		}
+	.inline-spinner {
+		display: inline-block;
+		width: 14px;
+		height: 14px;
+		border: 2px solid rgba(102, 126, 234, 0.3);
+		border-top-color: #667eea;
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+		vertical-align: middle;
 	}
 
 	.spinner {
