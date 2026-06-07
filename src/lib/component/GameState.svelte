@@ -13,6 +13,9 @@
 	let isConnected = $state<boolean>(false);
 	let isConnecting = $state<boolean>(false);
 	let isConnectingToPeer = $state<boolean>(false);
+	let isServerStarting = $state<boolean>(false);
+	let connectionStartTime: number | null = null;
+	let serverStartCheckTimer: ReturnType<typeof setTimeout> | null = null;
 	let peerWrapper: PeerWrapper | null = null;
 
 	const gameState = {
@@ -46,6 +49,9 @@
 		get isConnectingToPeer() {
 			return isConnectingToPeer;
 		},
+		get isServerStarting() {
+			return isServerStarting;
+		},
 
 		setPlayerName: (name: string) => {
 			playerName = name;
@@ -55,6 +61,16 @@
 		connectToServer: () => {
 			isConnected = false;
 			isConnecting = true;
+			isServerStarting = false;
+			connectionStartTime = Date.now();
+
+			// 5秒経過後にサーバー起動中状態にする
+			if (serverStartCheckTimer) clearTimeout(serverStartCheckTimer);
+			serverStartCheckTimer = setTimeout(() => {
+				if (isConnecting && !isConnected) {
+					isServerStarting = true;
+				}
+			}, 5000);
 
 			peerWrapper = new PeerWrapper(
 				peerId,
@@ -77,6 +93,16 @@
 			const myIcon = getRandomHeroIcon();
 			isConnected = false;
 			isConnecting = true;
+			isServerStarting = false;
+			connectionStartTime = Date.now();
+
+			// 5秒経過後にサーバー起動中状態にする
+			if (serverStartCheckTimer) clearTimeout(serverStartCheckTimer);
+			serverStartCheckTimer = setTimeout(() => {
+				if (isConnecting && !isConnected) {
+					isServerStarting = true;
+				}
+			}, 5000);
 
 			peerWrapper = new PeerWrapper(
 				peerId,
@@ -150,8 +176,19 @@
 
 	function handleServerConnected() {
 		console.log('Connected to server');
+		if (serverStartCheckTimer) {
+			clearTimeout(serverStartCheckTimer);
+			serverStartCheckTimer = null;
+		}
 		isConnecting = false;
 		isConnected = true;
+		isServerStarting = false;
+
+		if (connectionStartTime) {
+			const connectionTime = Date.now() - connectionStartTime;
+			console.log(`Connection established in ${connectionTime}ms`);
+			connectionStartTime = null;
+		}
 	}
 
 	function handleData(id: string, data: Message) {
@@ -279,6 +316,9 @@
 		playerIcon = getRandomHeroIcon();
 
 		return () => {
+			if (serverStartCheckTimer) {
+				clearTimeout(serverStartCheckTimer);
+			}
 			peerWrapper?.disconnect();
 		};
 	});

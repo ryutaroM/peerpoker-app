@@ -2,11 +2,13 @@
 	interface Props {
 		isOpen: boolean;
 		isConnecting: boolean;
+		isServerStarting: boolean;
 		onConnect: () => void;
 		onCancel: () => void;
 	}
 
-	let { isOpen = $bindable(), isConnecting, onConnect, onCancel }: Props = $props();
+	let { isOpen = $bindable(), isConnecting, isServerStarting, onConnect, onCancel }: Props =
+		$props();
 </script>
 
 {#if isOpen}
@@ -27,6 +29,30 @@
 			<p class="description">
 				Planning Pokerセッションを開始します。<br />接続後、他のプレイヤーとゲームを楽しめます。
 			</p>
+
+			{#if isConnecting}
+				<div class="connection-status">
+					<div class="spinner"></div>
+					{#if isServerStarting}
+						<div class="status-text server-starting">
+							<div class="status-title">🚀 サーバー起動中</div>
+							<div class="status-subtitle">
+								無料プランのサーバーが起動しています...<br />
+								初回接続時は30秒〜1分程度かかる場合があります
+							</div>
+						</div>
+					{:else}
+						<div class="status-text">
+							<div class="status-title">接続中<span class="dots"></span></div>
+							<div class="status-subtitle">サーバーに接続しています</div>
+						</div>
+					{/if}
+					<div class="progress-bar">
+						<div class="progress-fill"></div>
+					</div>
+				</div>
+			{/if}
+
 			<div class="button-group">
 				<button class="secondary-btn" onclick={onCancel} disabled={isConnecting}>
 					キャンセル
@@ -167,6 +193,89 @@
 		80%,
 		100% {
 			content: '...';
+		}
+	}
+
+	.connection-status {
+		margin: 1.5rem 0;
+		padding: 1.5rem;
+		background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+		border-radius: 12px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.spinner {
+		width: 50px;
+		height: 50px;
+		border: 4px solid rgba(102, 126, 234, 0.2);
+		border-top-color: #667eea;
+		border-radius: 50%;
+		animation: spin 1s linear infinite;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	.status-text {
+		text-align: center;
+	}
+
+	.status-title {
+		font-size: 1.1rem;
+		font-weight: 600;
+		color: #333;
+		margin-bottom: 0.5rem;
+	}
+
+	.status-subtitle {
+		font-size: 0.9rem;
+		color: #666;
+		line-height: 1.5;
+	}
+
+	.server-starting .status-title {
+		color: #667eea;
+		font-size: 1.2rem;
+	}
+
+	.server-starting .status-subtitle {
+		color: #555;
+		font-weight: 500;
+	}
+
+	.progress-bar {
+		width: 100%;
+		height: 6px;
+		background: rgba(102, 126, 234, 0.2);
+		border-radius: 3px;
+		overflow: hidden;
+		margin-top: 0.5rem;
+	}
+
+	.progress-fill {
+		height: 100%;
+		background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+		border-radius: 3px;
+		animation: progress 2s ease-in-out infinite;
+	}
+
+	@keyframes progress {
+		0% {
+			width: 0%;
+			transform: translateX(0);
+		}
+		50% {
+			width: 70%;
+		}
+		100% {
+			width: 100%;
+			transform: translateX(0);
 		}
 	}
 </style>

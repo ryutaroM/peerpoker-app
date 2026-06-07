@@ -20,6 +20,7 @@
 		isConnected: boolean;
 		isConnecting: boolean;
 		isConnectingToPeer: boolean;
+		isServerStarting: boolean;
 		setPlayerName: (name: string) => void;
 		connectToServer: () => void;
 		startGame: (name: string) => void;
@@ -59,7 +60,7 @@
 							onClick={() => (showActionMenu = !showActionMenu)}
 						/>
 						{#if showActionMenu}
-							<div class="action-menu">
+							<div class="action-menu action-menu-right">
 								<button
 									class="menu-item"
 									onclick={() => {
@@ -116,6 +117,7 @@
 				<ConnectionDialog
 					bind:isOpen={showConnectionDialog}
 					isConnecting={state.isConnecting}
+					isServerStarting={state.isServerStarting}
 					onConnect={() => {
 						state.connectToServer();
 					}}
@@ -133,7 +135,8 @@
 								onClick={() => (showActionMenuInGame = !showActionMenuInGame)}
 							/>
 							{#if showActionMenuInGame}
-								<div class="action-menu">
+								<!-- 左側メニュー: Share Link, Your ID -->
+								<div class="action-menu action-menu-left">
 									<button
 										class="menu-item"
 										onclick={() => {
@@ -153,6 +156,9 @@
 											<code class="id-code">{state.peerId}</code>
 										</div>
 									</div>
+								</div>
+								<!-- 右側メニュー: Connect -->
+								<div class="action-menu action-menu-right">
 									<div class="menu-item connect-item">
 										<span class="menu-icon">🤝</span>
 										<div class="connect-form">
@@ -257,7 +263,6 @@
 	.action-menu {
 		position: absolute;
 		top: 50%;
-		left: calc(100% + 1.5rem);
 		transform: translateY(-50%);
 		background: white;
 		border-radius: 16px;
@@ -268,10 +273,32 @@
 		gap: 0.5rem;
 		min-width: 200px;
 		z-index: 20;
-		animation: slideIn 0.2s ease;
 	}
 
-	@keyframes slideIn {
+	/* 左側メニュー用のスタイル */
+	.action-menu-left {
+		right: calc(100% + 1.5rem);
+		animation: slideInLeft 0.2s ease;
+	}
+
+	/* 右側メニュー用のスタイル */
+	.action-menu-right {
+		left: calc(100% + 1.5rem);
+		animation: slideInRight 0.2s ease;
+	}
+
+	@keyframes slideInLeft {
+		from {
+			opacity: 0;
+			transform: translateY(-50%) translateX(10px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(-50%) translateX(0);
+		}
+	}
+
+	@keyframes slideInRight {
 		from {
 			opacity: 0;
 			transform: translateY(-50%) translateX(-10px);
