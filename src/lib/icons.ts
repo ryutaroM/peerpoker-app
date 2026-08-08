@@ -150,6 +150,50 @@ export const heroIcons = [
     <circle cx="45" cy="33" r="2" fill="#FF0000"/>
     <circle cx="55" cy="33" r="2" fill="#FF0000"/>
     <path d="M 49 42 L 48 45 M 51 42 L 52 45" stroke="#FF0000" stroke-width="1"/>
+  </svg>`,
+
+	// 大魔法使い
+	`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="50" cy="35" r="15" fill="#FFE4B5"/>
+    <path d="M 38 22 L 50 3 L 62 22 Z" fill="#191970"/>
+    <circle cx="50" cy="6" r="3" fill="#FFD700"/>
+    <path d="M 44 44 L 50 38 L 56 44 L 55 52 L 45 52 Z" fill="#F5F5F5"/>
+    <rect x="40" y="50" width="20" height="28" fill="#191970"/>
+    <rect x="34" y="55" width="10" height="20" fill="#191970"/>
+    <rect x="56" y="55" width="10" height="20" fill="#191970"/>
+    <rect x="45" y="78" width="5" height="12" fill="#8B4513"/>
+    <rect x="50" y="78" width="5" height="12" fill="#8B4513"/>
+    <rect x="66" y="30" width="3" height="45" fill="#8B4513"/>
+    <path d="M 63 25 L 67.5 16 L 72 25 Z" fill="#FFD700"/>
+  </svg>`,
+
+	// エンジニア
+	`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="50" cy="35" r="15" fill="#FFE4B5"/>
+    <path d="M 33 28 A 17 13 0 0 1 67 28 L 67 22 L 33 22 Z" fill="#FFD700"/>
+    <rect x="42" y="50" width="16" height="25" fill="#FF8C00"/>
+    <rect x="44" y="58" width="12" height="4" fill="#C0C0C0"/>
+    <rect x="35" y="55" width="10" height="3" fill="#FF8C00"/>
+    <rect x="55" y="55" width="10" height="3" fill="#FF8C00"/>
+    <rect x="45" y="75" width="5" height="15" fill="#4682B4"/>
+    <rect x="50" y="75" width="5" height="15" fill="#4682B4"/>
+    <rect x="62" y="52" width="10" height="4" fill="#696969"/>
+    <rect x="65" y="55" width="4" height="15" fill="#696969"/>
+  </svg>`,
+
+	// サムライ
+	`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="50" cy="35" r="15" fill="#FFE4B5"/>
+    <path d="M 35 28 Q 50 14 65 28 L 65 33 L 35 33 Z" fill="#8B0000"/>
+    <rect x="48" y="14" width="4" height="10" fill="#2F2F2F"/>
+    <circle cx="50" cy="12" r="3" fill="#2F2F2F"/>
+    <rect x="42" y="50" width="16" height="25" fill="#8B0000"/>
+    <rect x="35" y="55" width="10" height="3" fill="#2F2F2F"/>
+    <rect x="55" y="55" width="10" height="3" fill="#2F2F2F"/>
+    <rect x="45" y="75" width="5" height="15" fill="#2F2F2F"/>
+    <rect x="50" y="75" width="5" height="15" fill="#2F2F2F"/>
+    <path d="M 63 45 L 78 28 L 80.5 30.5 L 65.5 47.5 Z" fill="#C0C0C0"/>
+    <rect x="61" y="46" width="4" height="6" fill="#8B4513"/>
   </svg>`
 ];
 

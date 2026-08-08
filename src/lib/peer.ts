@@ -8,6 +8,8 @@ export class PeerWrapper {
 	private reconnectAttempts = 0;
 	private maxReconnectAttempts = 3;
 	private reconnectDelay = 2000; // 2 seconds
+	private isDestroyed = false;
+	private pendingTimers: Set<ReturnType<typeof setTimeout>> = new Set();
 
 	constructor(
 		private peerId: string,
@@ -52,6 +54,7 @@ export class PeerWrapper {
 		}
 
 		const attemptConnection = (attempt: number) => {
+			if (this.isDestroyed) return;
 			console.log(`Connection attempt ${attempt}/${maxRetries} to ${peerId}`);
 
 			if (!this.peer) {
@@ -67,20 +70,27 @@ export class PeerWrapper {
 
 			// Timeout for connection attempt
 			const connectionTimeout = setTimeout(() => {
+				this.pendingTimers.delete(connectionTimeout);
 				if (!isResolved) {
 					console.warn(`Connection timeout for peer ${peerId} (attempt ${attempt})`);
 					conn.close();
 
 					if (attempt < maxRetries) {
 						console.log(`Retrying connection in 2 seconds... (${attempt + 1}/${maxRetries})`);
-						setTimeout(() => attemptConnection(attempt + 1), 2000);
+						const retryTimer = setTimeout(() => {
+							this.pendingTimers.delete(retryTimer);
+							attemptConnection(attempt + 1);
+						}, 2000);
+						this.pendingTimers.add(retryTimer);
 					} else {
 						console.error(`Failed to connect to ${peerId} after ${maxRetries} attempts`);
 					}
 				}
 			}, 10000);
+			this.pendingTimers.add(connectionTimeout);
 
 			const cleanup = () => {
+				this.pendingTimers.delete(connectionTimeout);
 				clearTimeout(connectionTimeout);
 				isResolved = true;
 			};
@@ -91,6 +101,7 @@ export class PeerWrapper {
 				this.setupConnection(conn);
 			} else {
 				conn.on('open', () => {
+					if (this.isDestroyed) return;
 					cleanup();
 					console.log('Connection opened, setting up');
 					this.setupConnection(conn);
@@ -102,7 +113,11 @@ export class PeerWrapper {
 
 					if (attempt < maxRetries) {
 						console.log(`Retrying connection in 2 seconds... (${attempt + 1}/${maxRetries})`);
-						setTimeout(() => attemptConnection(attempt + 1), 2000);
+						const retryTimer = setTimeout(() => {
+							this.pendingTimers.delete(retryTimer);
+							attemptConnection(attempt + 1);
+						}, 2000);
+						this.pendingTimers.add(retryTimer);
 					} else {
 						console.error(`Failed to connect to ${peerId} after ${maxRetries} attempts`);
 					}
@@ -117,6 +132,7 @@ export class PeerWrapper {
 		console.log('setupConnection called for peer:', conn.peer);
 
 		conn.on('data', (data: unknown) => {
+			if (this.isDestroyed) return;
 			if (data && typeof data === 'object' && 'type' in data && 'senderId' in data) {
 				this.onData(conn.peer, data as Message);
 			} else {
@@ -125,6 +141,7 @@ export class PeerWrapper {
 		});
 
 		conn.on('close', () => {
+			if (this.isDestroyed) return;
 			console.log(`Disconnected from peer: ${conn.peer}`);
 			this.conns.delete(conn.peer);
 			this.onPeerDisconnected(conn.peer);
@@ -186,6 +203,9 @@ export class PeerWrapper {
 	}
 
 	public disconnect(): void {
+		this.isDestroyed = true;
+		this.pendingTimers.forEach(clearTimeout);
+		this.pendingTimers.clear();
 		this.conns.forEach((conn) => {
 			conn.close();
 		});

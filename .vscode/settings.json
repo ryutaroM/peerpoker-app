@@ -2,6 +2,7 @@
 	"files.associations": {
 		"wrangler.json": "jsonc"
 	},
+	"cSpell.words": ["Vitest"],
 	"editor.formatOnSave": true,
 	"[svelte]": {
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
