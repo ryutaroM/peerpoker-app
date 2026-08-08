@@ -19,7 +19,9 @@
 <div class="connection-panel">
 	{#if isConnecting}
 		<div class="loading">
-			<p class="loading-text">Connecting to signaling server <span class="inline-spinner"></span></p>
+			<p class="loading-text">
+				Connecting to signaling server <span class="inline-spinner"></span>
+			</p>
 			<div class="spinner"></div>
 		</div>
 	{:else}
