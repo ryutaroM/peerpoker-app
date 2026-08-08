@@ -260,6 +260,12 @@
 				isRevealed = false;
 				break;
 			}
+			case 'leave': {
+				if (data.senderId === id) {
+					handlePeerDisconnected(data.senderId);
+				}
+				return;
+			}
 		}
 
 		participants = newParticipants;
@@ -305,21 +311,40 @@
 	}
 
 	function handlePeerDisconnected(id: string) {
+		if (!participants.has(id)) return;
 		console.log(`Peer disconnected: ${id}`);
 		const newParticipants = new Map(participants);
 		newParticipants.delete(id);
 		participants = newParticipants;
 	}
 
+	function cleanupAndDisconnect() {
+		if (!peerWrapper) return;
+
+		const leaveMessage: Message = {
+			type: 'leave',
+			senderId: peerId,
+			timestamp: Date.now()
+		};
+		peerWrapper.broadcast(leaveMessage);
+		peerWrapper.disconnect();
+		peerWrapper = null;
+	}
+
 	onMount(() => {
 		peerId = crypto.randomUUID();
 		playerIcon = getRandomHeroIcon();
 
+		window.addEventListener('beforeunload', cleanupAndDisconnect);
+		window.addEventListener('pagehide', cleanupAndDisconnect);
+
 		return () => {
+			window.removeEventListener('beforeunload', cleanupAndDisconnect);
+			window.removeEventListener('pagehide', cleanupAndDisconnect);
 			if (serverStartCheckTimer) {
 				clearTimeout(serverStartCheckTimer);
 			}
-			peerWrapper?.disconnect();
+			cleanupAndDisconnect();
 		};
 	});
 

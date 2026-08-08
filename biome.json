@@ -1,0 +1,18 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.5.7/schema.json",
+	"vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+	"files": {
+		"includes": [
+			"**",
+			"!**/*.svelte",
+			"!**/*.svg",
+			"!package-lock.json",
+			"!src/worker-configuration.d.ts"
+		]
+	},
+	"formatter": { "enabled": true, "indentStyle": "tab", "lineWidth": 100 },
+	"javascript": { "formatter": { "quoteStyle": "single", "trailingCommas": "none" } },
+	"json": { "formatter": { "trailingCommas": "none" } },
+	"linter": { "enabled": true, "rules": { "preset": "recommended" } },
+	"assist": { "enabled": true, "actions": { "source": { "organizeImports": "off" } } }
+}

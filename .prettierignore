@@ -5,5 +5,14 @@ yarn.lock
 bun.lock
 bun.lockb
 
+# Biome が担当するため Prettier の対象から除外(npm scriptのglob限定と二重の安全策)
+*.ts
+*.js
+*.mjs
+*.cjs
+*.json
+*.jsonc
+*.css
+
 # Miscellaneous
 /static/

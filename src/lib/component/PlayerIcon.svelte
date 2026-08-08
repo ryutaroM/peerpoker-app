@@ -10,7 +10,11 @@
 </script>
 
 <button class="player-icon" onclick={onClick}>
-	<div class="icon-container" class:connecting={connectionStatus === 'connecting'} class:connected={connectionStatus === 'connected'}>
+	<div
+		class="icon-container"
+		class:connecting={connectionStatus === 'connecting'}
+		class:connected={connectionStatus === 'connected'}
+	>
 		{#if icon}
 			{@html icon}
 		{:else}
@@ -79,7 +83,8 @@
 	}
 
 	@keyframes pulse {
-		0%, 100% {
+		0%,
+		100% {
 			box-shadow: 0 8px 20px rgba(251, 191, 36, 0.4);
 		}
 		50% {

@@ -7,8 +7,13 @@
 		onCancel: () => void;
 	}
 
-	let { isOpen = $bindable(), isConnecting, isServerStarting, onConnect, onCancel }: Props =
-		$props();
+	let {
+		isOpen = $bindable(),
+		isConnecting,
+		isServerStarting,
+		onConnect,
+		onCancel
+	}: Props = $props();
 </script>
 
 {#if isOpen}
@@ -188,7 +193,11 @@
 	.connection-status {
 		margin: 1.5rem 0;
 		padding: 1.5rem;
-		background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+		background: linear-gradient(
+			135deg,
+			rgba(102, 126, 234, 0.05) 0%,
+			rgba(118, 75, 162, 0.05) 100%
+		);
 		border-radius: 12px;
 		display: flex;
 		flex-direction: column;
