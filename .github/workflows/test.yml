@@ -1,0 +1,73 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  unit:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # 単体テストも vitest の browser mode で chromium を使うためインストールが必要
+      - name: Install Playwright chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Type check
+        run: npm run check
+
+      - name: Run unit tests
+        run: npm run test:unit -- --run
+
+  e2e:
+    name: E2E tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright chromium
+        run: npx playwright install --with-deps chromium
+
+      # webServer 設定がビルドとプレビューサーバーの起動を行う
+      - name: Run e2e tests
+        run: npm run test:e2e
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+  # TODO: lint ジョブを追加する
+  # `npm run lint` は biome check と prettier --check '**/*.svelte' は通るが、
+  # eslint が既存コンポーネントの 9 件で失敗する。以下を解消したら unit / e2e と並列で実行する:
+  #   - GameState.svelte:      svelte/prefer-svelte-reactivity (Map → SvelteMap, 4 箇所)
+  #   - ParticipantCard/PlayerIcon.svelte: svelte/no-at-html-tags ({@html} の XSS 警告)
+  #   - ResultBanner.svelte:   @typescript-eslint/no-unused-vars (未使用 import の Vote)
+  #   - VoteCards.svelte:      svelte/require-each-key
+  #   - +page.svelte:          svelte/no-useless-children-snippet
