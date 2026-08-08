@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Participant } from '$lib/types';
+	import { heroIcons } from '$lib/icons';
 
 	let {
 		participant,
@@ -11,8 +12,9 @@
 </script>
 
 <div class="participant-card">
-	{#if participant.icon}
+	{#if participant.icon && heroIcons.includes(participant.icon)}
 		<div class="icon">
+			<!-- eslint-disable-next-line svelte/no-at-html-tags -- heroIcons許可リストに含まれる固定SVGのみ描画するため安全 -->
 			{@html participant.icon}
 		</div>
 	{/if}
