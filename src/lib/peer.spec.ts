@@ -95,12 +95,25 @@ function createWrapper() {
 	return { wrapper, callbacks };
 }
 
+/** 直近に生成された FakePeer。 */
+function lastPeer() {
+	const peer = FakePeer.instances.at(-1);
+	if (!peer) throw new Error('Peer がまだ生成されていません');
+	return peer;
+}
+
+/** 直近に connectTo で張られた接続。 */
+function lastOutgoing() {
+	const conn = FakePeer.outgoing.at(-1);
+	if (!conn) throw new Error('発信側の接続がまだ生成されていません');
+	return conn;
+}
+
 /** connect() 済みの PeerWrapper と、生成された FakePeer を返す。 */
 function createConnectedWrapper() {
 	const { wrapper, callbacks } = createWrapper();
 	wrapper.connect();
-	const peer = FakePeer.instances.at(-1)!;
-	return { wrapper, callbacks, peer };
+	return { wrapper, callbacks, peer: lastPeer() };
 }
 
 /** 相手からの着信を確立済みの状態にして、その接続を返す。 */
@@ -132,7 +145,7 @@ describe('PeerWrapper', () => {
 
 			wrapper.connect();
 
-			const peer = FakePeer.instances.at(-1)!;
+			const peer = lastPeer();
 			expect(peer.id).toBe(MY_ID);
 			expect(peer.options).toMatchObject({
 				host: 'peerpoker-signaling-server.onrender.com',
@@ -154,7 +167,7 @@ describe('PeerWrapper', () => {
 			const wrapper = new PeerWrapper(MY_ID, vi.fn(), vi.fn(), vi.fn());
 			wrapper.connect();
 
-			expect(() => FakePeer.instances.at(-1)!.emit('open', MY_ID)).not.toThrow();
+			expect(() => lastPeer().emit('open', MY_ID)).not.toThrow();
 		});
 	});
 
@@ -250,7 +263,7 @@ describe('PeerWrapper', () => {
 			const { wrapper, callbacks } = createConnectedWrapper();
 			wrapper.connectTo('peer-2');
 
-			const conn = FakePeer.outgoing.at(-1)!;
+			const conn = lastOutgoing();
 			conn.open = true;
 			conn.emit('open');
 
@@ -276,7 +289,7 @@ describe('PeerWrapper', () => {
 			const { wrapper, peer } = createConnectedWrapper();
 
 			wrapper.connectTo('peer-2');
-			const first = FakePeer.outgoing.at(-1)!;
+			const first = lastOutgoing();
 
 			vi.advanceTimersByTime(10000);
 			expect(first.close).toHaveBeenCalledTimes(1);
@@ -291,7 +304,7 @@ describe('PeerWrapper', () => {
 			const { wrapper, peer } = createConnectedWrapper();
 
 			wrapper.connectTo('peer-2');
-			FakePeer.outgoing.at(-1)!.emit('error', new Error('boom'));
+			lastOutgoing().emit('error', new Error('boom'));
 
 			vi.advanceTimersByTime(2000);
 
@@ -325,7 +338,7 @@ describe('PeerWrapper', () => {
 			const { wrapper, peer } = createConnectedWrapper();
 
 			wrapper.connectTo('peer-2');
-			const conn = FakePeer.outgoing.at(-1)!;
+			const conn = lastOutgoing();
 			conn.open = true;
 			conn.emit('open');
 
@@ -493,6 +506,51 @@ describe('PeerWrapper', () => {
 			const { wrapper } = createWrapper();
 
 			expect(() => wrapper.disconnect()).not.toThrow();
+		});
+
+		it('保留中の再試行タイマーを止める', () => {
+			vi.useFakeTimers();
+			const { wrapper, peer } = createConnectedWrapper();
+			wrapper.connectTo('peer-2');
+
+			// 1 回目がタイムアウトして再試行待ちに入った状態で切断する
+			vi.advanceTimersByTime(10000);
+			wrapper.disconnect();
+			vi.advanceTimersByTime(10000);
+
+			expect(peer.connect).toHaveBeenCalledTimes(1);
+		});
+
+		it('切断後に届いたデータは onData を呼ばない', () => {
+			const { wrapper, callbacks, peer } = createConnectedWrapper();
+			const conn = acceptIncoming(peer, 'peer-2');
+
+			wrapper.disconnect();
+			conn.emit('data', message());
+
+			expect(callbacks.onData).not.toHaveBeenCalled();
+		});
+
+		it('切断後の close 通知は onPeerDisconnected を呼ばない', () => {
+			const { wrapper, callbacks, peer } = createConnectedWrapper();
+			const conn = acceptIncoming(peer, 'peer-2');
+
+			wrapper.disconnect();
+			conn.emit('close');
+
+			expect(callbacks.onPeerDisconnected).not.toHaveBeenCalled();
+		});
+
+		it('切断後に開通した接続は確立扱いにしない', () => {
+			const { wrapper, callbacks } = createConnectedWrapper();
+			wrapper.connectTo('peer-2');
+			const conn = lastOutgoing();
+
+			wrapper.disconnect();
+			conn.open = true;
+			conn.emit('open');
+
+			expect(callbacks.onPeerConnected).not.toHaveBeenCalled();
 		});
 	});
 

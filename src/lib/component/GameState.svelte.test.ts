@@ -23,28 +23,21 @@ const { instances } = vi.hoisted(() => ({ instances: [] as MockPeerWrapper[] }))
 vi.mock('$lib/peer', () => ({
 	// クラス式で定義する。vi.fn() 由来のモックは restoreAllMocks で実装が失われ、
 	// `new PeerWrapper(...)` が壊れてしまうため。
-	PeerWrapper: class {
+	PeerWrapper: class implements MockPeerWrapper {
+		connect = vi.fn();
+		connectTo = vi.fn();
+		broadcast = vi.fn();
+		sendTo = vi.fn();
+		disconnect = vi.fn();
+
 		constructor(
-			peerId: string,
-			onData: MockPeerWrapper['onData'],
-			onPeerConnected: MockPeerWrapper['onPeerConnected'],
-			onPeerDisconnected: MockPeerWrapper['onPeerDisconnected'],
-			onServerConnected?: MockPeerWrapper['onServerConnected']
+			public peerId: string,
+			public onData: MockPeerWrapper['onData'],
+			public onPeerConnected: MockPeerWrapper['onPeerConnected'],
+			public onPeerDisconnected: MockPeerWrapper['onPeerDisconnected'],
+			public onServerConnected?: MockPeerWrapper['onServerConnected']
 		) {
-			const instance: MockPeerWrapper = {
-				connect: vi.fn(),
-				connectTo: vi.fn(),
-				broadcast: vi.fn(),
-				sendTo: vi.fn(),
-				disconnect: vi.fn(),
-				peerId,
-				onData,
-				onPeerConnected,
-				onPeerDisconnected,
-				onServerConnected
-			};
-			instances.push(instance);
-			return instance;
+			instances.push(this);
 		}
 	}
 }));
@@ -365,13 +358,29 @@ describe('GameState', () => {
 			expect(state.participants.has(MY_ID)).toBe(true);
 		});
 
-		it('アンマウント時に接続を破棄する', async () => {
+		it('既に取り除かれたピアの切断通知では状態を変えない', async () => {
+			const { state } = await renderGameState();
+			state.startGame('Alice');
+			peer().onPeerConnected('peer-2');
+			peer().onPeerDisconnected('peer-2');
+			const participantsAfterFirst = state.participants;
+
+			peer().onPeerDisconnected('peer-2');
+
+			expect(state.participants).toBe(participantsAfterFirst);
+			expect(state.participants.size).toBe(1);
+		});
+
+		it('アンマウント時に離脱を通知してから接続を破棄する', async () => {
 			const { state, unmount } = await renderGameState();
 			state.startGame('Alice');
 			const instance = peer();
 
-			unmount();
+			await unmount();
 
+			expect(instance.broadcast).toHaveBeenCalledExactlyOnceWith(
+				expect.objectContaining({ type: 'leave', senderId: MY_ID })
+			);
 			expect(instance.disconnect).toHaveBeenCalledTimes(1);
 		});
 	});
@@ -507,14 +516,35 @@ describe('GameState', () => {
 			expect(state.participants.get('peer-2')).toMatchObject({ vote: undefined, hasVoted: false });
 		});
 
-		it('leave: 未対応の種別を受け取っても状態を壊さない', async () => {
+		it('leave: 送信元自身の離脱通知で参加者から取り除く', async () => {
 			const { state } = await renderGameState();
 			state.startGame('Alice');
 			peer().onPeerConnected('peer-2');
 
 			peer().onData('peer-2', message({ type: 'leave', senderId: 'peer-2' }));
 
-			expect(state.participants.size).toBe(2);
+			expect(state.participants.has('peer-2')).toBe(false);
+			expect(state.participants.has(MY_ID)).toBe(true);
+		});
+
+		it('leave: 別のピアを騙る離脱通知は無視する', async () => {
+			const { state } = await renderGameState();
+			state.startGame('Alice');
+			peer().onPeerConnected('peer-2');
+			peer().onPeerConnected('peer-3');
+
+			peer().onData('peer-2', message({ type: 'leave', senderId: 'peer-3' }));
+
+			expect(state.participants.has('peer-3')).toBe(true);
+		});
+
+		it('leave: 参加者にいないピアからの離脱通知でも状態を壊さない', async () => {
+			const { state } = await renderGameState();
+			state.startGame('Alice');
+
+			peer().onData('peer-9', message({ type: 'leave', senderId: 'peer-9' }));
+
+			expect(state.participants.size).toBe(1);
 			expect(state.isRevealed).toBe(false);
 		});
 	});
