@@ -38,7 +38,7 @@ export class PeerWrapper {
 		this.peer.on('error', (e) => {
 			console.error(`Peer error: ${e}`);
 
-			if (e.type == 'network' || e.type == 'server-error') {
+			if (e.type === 'network' || e.type === 'server-error') {
 				this.attemptReconnect();
 			}
 		});
@@ -54,7 +54,12 @@ export class PeerWrapper {
 		const attemptConnection = (attempt: number) => {
 			console.log(`Connection attempt ${attempt}/${maxRetries} to ${peerId}`);
 
-			const conn = this.peer!.connect(peerId, {
+			if (!this.peer) {
+				console.log('this.peer is null, returning');
+				return;
+			}
+
+			const conn = this.peer.connect(peerId, {
 				reliable: true
 			});
 
