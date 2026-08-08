@@ -48,7 +48,11 @@
 <GameState>
 	{#snippet children()}
 		{@const state = getContext<GameStateContext>('gameState')}
-		{@const connectionStatus = state.isConnectingToPeer ? 'connecting' : state.participants.size > 0 ? 'connected' : 'disconnected'}
+		{@const connectionStatus = state.isConnectingToPeer
+			? 'connecting'
+			: state.participants.size > 0
+				? 'connected'
+				: 'disconnected'}
 
 		<div class="container">
 			{#if !state.isConnected}
