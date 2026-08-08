@@ -3,12 +3,13 @@
 	import type { Message, Participant, PeerId } from '$lib/types';
 	import { onMount, setContext } from 'svelte';
 	import { getRandomHeroIcon } from '$lib/icons';
+	import { SvelteMap } from 'svelte/reactivity';
 
 	let peerId = $state<string>('');
 	let playerName = $state<string>('');
 	let playerIcon = $state<string>('');
 	let hasName = $state<boolean>(false);
-	let participants = $state<Map<PeerId, Participant>>(new Map());
+	let participants: SvelteMap<PeerId, Participant> = new SvelteMap();
 	let isRevealed = $state<boolean>(false);
 	let isConnected = $state<boolean>(false);
 	let isConnecting = $state<boolean>(false);
@@ -127,7 +128,7 @@
 		},
 
 		vote: (value: string | number) => {
-			const newParticipants = new Map(participants);
+			const newParticipants = new SvelteMap(participants);
 			const me = newParticipants.get(peerId);
 			if (me) {
 				me.vote = value;
@@ -155,7 +156,7 @@
 		},
 
 		reset: () => {
-			const newParticipants = new Map(participants);
+			const newParticipants = new SvelteMap(participants);
 			newParticipants.forEach((participant) => {
 				participant.vote = undefined;
 				participant.hasVoted = false;
@@ -194,7 +195,7 @@
 	function handleData(id: string, data: Message) {
 		console.log(`Received data from ${id}:`, data);
 
-		const newParticipants = new Map(participants);
+		const newParticipants = new SvelteMap(participants);
 
 		switch (data.type) {
 			case 'join': {
@@ -276,7 +277,7 @@
 		isConnectingToPeer = false; // Successfully connected to peer
 
 		// ★ 新しいピアをローカルに追加（最初に）
-		const newParticipants = new Map(participants);
+		const newParticipants = new SvelteMap(participants);
 		newParticipants.set(id, {
 			name: 'Connecting...',
 			hasVoted: false,
@@ -313,7 +314,7 @@
 	function handlePeerDisconnected(id: string) {
 		if (!participants.has(id)) return;
 		console.log(`Peer disconnected: ${id}`);
-		const newParticipants = new Map(participants);
+		const newParticipants = new SvelteMap(participants);
 		newParticipants.delete(id);
 		participants = newParticipants;
 	}

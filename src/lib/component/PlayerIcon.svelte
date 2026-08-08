@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { heroIcons } from '$lib/icons';
+
 	interface Props {
 		icon?: string;
 		name?: string;
@@ -15,7 +17,8 @@
 		class:connecting={connectionStatus === 'connecting'}
 		class:connected={connectionStatus === 'connected'}
 	>
-		{#if icon}
+		{#if icon && heroIcons.includes(icon)}
+			<!-- eslint-disable-next-line svelte/no-at-html-tags -- heroIcons許可リストに含まれる固定SVGのみ描画するため安全 -->
 			{@html icon}
 		{:else}
 			<div class="placeholder-icon">?</div>

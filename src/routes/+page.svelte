@@ -46,184 +46,182 @@
 </script>
 
 <GameState>
-	{#snippet children()}
-		{@const state = getContext<GameStateContext>('gameState')}
-		{@const connectionStatus = state.isConnectingToPeer
-			? 'connecting'
-			: state.participants.size > 0
-				? 'connected'
-				: 'disconnected'}
+	{@const state = getContext<GameStateContext>('gameState')}
+	{@const connectionStatus = state.isConnectingToPeer
+		? 'connecting'
+		: state.participants.size > 0
+			? 'connected'
+			: 'disconnected'}
 
-		<div class="container">
-			{#if !state.isConnected}
-				<div class="setup-screen">
-					<h1 class="title">Planning Poker</h1>
+	<div class="container">
+		{#if !state.isConnected}
+			<div class="setup-screen">
+				<h1 class="title">Planning Poker</h1>
+				<div class="icon-container-wrapper">
+					<PlayerIcon
+						icon={state.playerIcon}
+						name={state.playerName}
+						onClick={() => (showActionMenu = !showActionMenu)}
+						{connectionStatus}
+					/>
+					{#if showActionMenu}
+						<div class="action-menu action-menu-right">
+							<button
+								class="menu-item"
+								onclick={() => {
+									showNameDialog = true;
+									showActionMenu = false;
+								}}
+							>
+								<span class="menu-icon">✏️</span>
+								<span class="menu-text">名前設定</span>
+							</button>
+							<button
+								class="menu-item primary"
+								onclick={() => {
+									showConnectionDialog = true;
+									showActionMenu = false;
+								}}
+								disabled={!state.hasName || state.isConnecting}
+							>
+								<span class="menu-icon">🎮</span>
+								<span class="menu-text">
+									{#if state.isConnecting}
+										接続中 <span class="spinner"></span>
+									{:else}
+										ゲーム開始
+									{/if}
+								</span>
+							</button>
+						</div>
+					{/if}
+				</div>
+			</div>
+			{#if showActionMenu}
+				<div
+					class="overlay"
+					role="button"
+					tabindex="-1"
+					onclick={() => (showActionMenu = false)}
+					onkeydown={(e) => e.key === 'Escape' && (showActionMenu = false)}
+				></div>
+			{/if}
+
+			<NameSettingDialog
+				bind:isOpen={showNameDialog}
+				initialName={state.playerName}
+				onSave={(name) => {
+					state.setPlayerName(name);
+					showNameDialog = false;
+				}}
+				onCancel={() => {
+					showNameDialog = false;
+				}}
+			/>
+
+			<ConnectionDialog
+				bind:isOpen={showConnectionDialog}
+				isConnecting={state.isConnecting}
+				isServerStarting={state.isServerStarting}
+				onConnect={() => {
+					state.connectToServer();
+				}}
+				onCancel={() => {
+					showConnectionDialog = false;
+				}}
+			/>
+		{:else}
+			<div class="game-container">
+				<div class="game-header">
 					<div class="icon-container-wrapper">
 						<PlayerIcon
 							icon={state.playerIcon}
 							name={state.playerName}
-							onClick={() => (showActionMenu = !showActionMenu)}
+							onClick={() => (showActionMenuInGame = !showActionMenuInGame)}
 							{connectionStatus}
 						/>
-						{#if showActionMenu}
-							<div class="action-menu action-menu-right">
+						{#if showActionMenuInGame}
+							<!-- 左側メニュー: Share Link, Your ID -->
+							<div class="action-menu action-menu-left">
 								<button
 									class="menu-item"
 									onclick={() => {
-										showNameDialog = true;
-										showActionMenu = false;
+										const url = `${window.location.origin}?connect_to=${state.peerId}`;
+										navigator.clipboard.writeText(url);
+										alert('Link copied!');
+										showActionMenuInGame = false;
 									}}
 								>
-									<span class="menu-icon">✏️</span>
-									<span class="menu-text">名前設定</span>
+									<span class="menu-icon">🔗</span>
+									<span class="menu-text">Share Link</span>
 								</button>
-								<button
-									class="menu-item primary"
-									onclick={() => {
-										showConnectionDialog = true;
-										showActionMenu = false;
-									}}
-									disabled={!state.hasName || state.isConnecting}
-								>
-									<span class="menu-icon">🎮</span>
-									<span class="menu-text">
-										{#if state.isConnecting}
-											接続中 <span class="spinner"></span>
-										{:else}
-											ゲーム開始
-										{/if}
-									</span>
-								</button>
+								<div class="menu-item info">
+									<span class="menu-icon">🆔</span>
+									<div class="id-info">
+										<div class="id-label">Your ID:</div>
+										<code class="id-code">{state.peerId}</code>
+									</div>
+								</div>
+							</div>
+							<!-- 右側メニュー: Connect -->
+							<div class="action-menu action-menu-right">
+								<div class="menu-item connect-item">
+									<span class="menu-icon">🤝</span>
+									<div class="connect-form">
+										<input
+											type="text"
+											placeholder="Opponent's ID"
+											bind:value={opponentId}
+											class="opponent-input"
+										/>
+										<button
+											class="connect-button"
+											onclick={() => {
+												state.connectToOpponent(opponentId);
+												showActionMenuInGame = false;
+											}}
+											disabled={!opponentId || state.isConnectingToPeer}
+										>
+											{#if state.isConnectingToPeer}
+												Connecting <span class="spinner"></span>
+											{:else}
+												Connect
+											{/if}
+										</button>
+									</div>
+								</div>
 							</div>
 						{/if}
 					</div>
 				</div>
-				{#if showActionMenu}
+
+				{#if showActionMenuInGame}
 					<div
 						class="overlay"
 						role="button"
 						tabindex="-1"
-						onclick={() => (showActionMenu = false)}
-						onkeydown={(e) => e.key === 'Escape' && (showActionMenu = false)}
+						onclick={() => (showActionMenuInGame = false)}
+						onkeydown={(e) => e.key === 'Escape' && (showActionMenuInGame = false)}
 					></div>
 				{/if}
 
-				<NameSettingDialog
-					bind:isOpen={showNameDialog}
-					initialName={state.playerName}
-					onSave={(name) => {
-						state.setPlayerName(name);
-						showNameDialog = false;
-					}}
-					onCancel={() => {
-						showNameDialog = false;
-					}}
-				/>
+				<VoteCards />
 
-				<ConnectionDialog
-					bind:isOpen={showConnectionDialog}
-					isConnecting={state.isConnecting}
-					isServerStarting={state.isServerStarting}
-					onConnect={() => {
-						state.connectToServer();
-					}}
-					onCancel={() => {
-						showConnectionDialog = false;
-					}}
-				/>
-			{:else}
-				<div class="game-container">
-					<div class="game-header">
-						<div class="icon-container-wrapper">
-							<PlayerIcon
-								icon={state.playerIcon}
-								name={state.playerName}
-								onClick={() => (showActionMenuInGame = !showActionMenuInGame)}
-								{connectionStatus}
-							/>
-							{#if showActionMenuInGame}
-								<!-- 左側メニュー: Share Link, Your ID -->
-								<div class="action-menu action-menu-left">
-									<button
-										class="menu-item"
-										onclick={() => {
-											const url = `${window.location.origin}?connect_to=${state.peerId}`;
-											navigator.clipboard.writeText(url);
-											alert('Link copied!');
-											showActionMenuInGame = false;
-										}}
-									>
-										<span class="menu-icon">🔗</span>
-										<span class="menu-text">Share Link</span>
-									</button>
-									<div class="menu-item info">
-										<span class="menu-icon">🆔</span>
-										<div class="id-info">
-											<div class="id-label">Your ID:</div>
-											<code class="id-code">{state.peerId}</code>
-										</div>
-									</div>
-								</div>
-								<!-- 右側メニュー: Connect -->
-								<div class="action-menu action-menu-right">
-									<div class="menu-item connect-item">
-										<span class="menu-icon">🤝</span>
-										<div class="connect-form">
-											<input
-												type="text"
-												placeholder="Opponent's ID"
-												bind:value={opponentId}
-												class="opponent-input"
-											/>
-											<button
-												class="connect-button"
-												onclick={() => {
-													state.connectToOpponent(opponentId);
-													showActionMenuInGame = false;
-												}}
-												disabled={!opponentId || state.isConnectingToPeer}
-											>
-												{#if state.isConnectingToPeer}
-													Connecting <span class="spinner"></span>
-												{:else}
-													Connect
-												{/if}
-											</button>
-										</div>
-									</div>
-								</div>
-							{/if}
-						</div>
-					</div>
+				<GameControls />
 
-					{#if showActionMenuInGame}
-						<div
-							class="overlay"
-							role="button"
-							tabindex="-1"
-							onclick={() => (showActionMenuInGame = false)}
-							onkeydown={(e) => e.key === 'Escape' && (showActionMenuInGame = false)}
-						></div>
-					{/if}
+				<ResultBanner />
 
-					<VoteCards />
-
-					<GameControls />
-
-					<ResultBanner />
-
-					<div class="game-area">
-						<h2>Participants: {state.participants.size}</h2>
-						<div class="participants">
-							{#each Array.from(state.participants.entries()) as [id, participant] (id)}
-								<ParticipantCard {participant} isRevealed={state.isRevealed} />
-							{/each}
-						</div>
+				<div class="game-area">
+					<h2>Participants: {state.participants.size}</h2>
+					<div class="participants">
+						{#each Array.from(state.participants.entries()) as [id, participant] (id)}
+							<ParticipantCard {participant} isRevealed={state.isRevealed} />
+						{/each}
 					</div>
 				</div>
-			{/if}
-		</div>
-	{/snippet}
+			</div>
+		{/if}
+	</div>
 </GameState>
 
 <style>
