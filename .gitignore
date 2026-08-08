@@ -25,3 +25,8 @@ vite.config.ts.timestamp-*
 
 .dev.vars*
 !.dev.vars.example
+
+# Test artifacts
+playwright-report
+**/__screenshots__
+.vitest-attachments
