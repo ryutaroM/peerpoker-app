@@ -1,7 +1,7 @@
 // src/lib/icons.ts
 export const heroIcons = [
-  // 剣士
-  `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+	// 剣士
+	`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
     <circle cx="50" cy="35" r="15" fill="#FFD700"/>
     <rect x="42" y="50" width="16" height="25" fill="#4169E1"/>
     <rect x="35" y="55" width="10" height="3" fill="#FFD700"/>
@@ -11,8 +11,8 @@ export const heroIcons = [
     <path d="M 65 45 L 75 35 L 77 37 L 67 47 Z" fill="#C0C0C0"/>
   </svg>`,
 
-  // 魔法使い
-  `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+	// 魔法使い
+	`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
     <circle cx="50" cy="35" r="15" fill="#FFE4B5"/>
     <path d="M 45 20 L 50 10 L 55 20 Z" fill="#9370DB"/>
     <rect x="42" y="50" width="16" height="25" fill="#9370DB"/>
@@ -24,8 +24,8 @@ export const heroIcons = [
     <circle cx="61" cy="47" r="3" fill="#FFD700"/>
   </svg>`,
 
-  // 戦士
-  `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+	// 戦士
+	`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
     <circle cx="50" cy="35" r="15" fill="#D2691E"/>
     <rect x="40" y="28" width="20" height="8" fill="#696969"/>
     <rect x="42" y="50" width="16" height="25" fill="#DC143C"/>
@@ -36,8 +36,8 @@ export const heroIcons = [
     <rect x="30" y="55" width="8" height="15" fill="#696969"/>
   </svg>`,
 
-  // 僧侶
-  `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+	// 僧侶
+	`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
     <circle cx="50" cy="35" r="15" fill="#FFE4B5"/>
     <rect x="42" y="50" width="16" height="25" fill="#FFFFFF"/>
     <rect x="47" y="50" width="6" height="25" fill="#FFD700"/>
@@ -48,8 +48,8 @@ export const heroIcons = [
     <path d="M 47 55 L 53 55 L 53 60 L 50 63 L 47 60 Z" fill="#FFD700"/>
   </svg>`,
 
-  // 盗賊
-  `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+	// 盗賊
+	`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
     <circle cx="50" cy="35" r="15" fill="#FFE4B5"/>
     <path d="M 40 30 L 60 30 L 55 25 L 45 25 Z" fill="#2F4F4F"/>
     <rect x="42" y="50" width="16" height="25" fill="#2F4F4F"/>
@@ -61,8 +61,8 @@ export const heroIcons = [
     <circle cx="60" cy="60" r="2" fill="#FFD700"/>
   </svg>`,
 
-  // 騎士
-  `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+	// 騎士
+	`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
     <circle cx="50" cy="35" r="15" fill="#FFE4B5"/>
     <rect x="35" y="25" width="30" height="15" fill="#C0C0C0"/>
     <rect x="42" y="50" width="16" height="25" fill="#4682B4"/>
@@ -73,8 +73,8 @@ export const heroIcons = [
     <rect x="25" y="50" width="12" height="18" fill="#C0C0C0"/>
   </svg>`,
 
-  // ドラゴン
-  `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+	// ドラゴン
+	`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
     <circle cx="50" cy="40" r="12" fill="#FF6347"/>
     <path d="M 65 35 L 75 25 L 73 40 Z" fill="#FF6347"/>
     <path d="M 35 35 L 25 25 L 27 40 Z" fill="#FF6347"/>
@@ -86,8 +86,8 @@ export const heroIcons = [
     <rect x="62" y="60" width="8" height="15" fill="#8B0000"/>
   </svg>`,
 
-  // ゴーレム
-  `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+	// ゴーレム
+	`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
     <rect x="40" y="25" width="20" height="20" fill="#808080"/>
     <rect x="35" y="45" width="30" height="25" fill="#A9A9A9"/>
     <rect x="30" y="60" width="10" height="15" fill="#808080"/>
@@ -98,8 +98,8 @@ export const heroIcons = [
     <line x1="35" y1="50" x2="65" y2="50" stroke="#696969" stroke-width="2"/>
   </svg>`,
 
-  // ゴブリン
-  `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+	// ゴブリン
+	`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
     <circle cx="50" cy="35" r="13" fill="#228B22"/>
     <path d="M 42 25 L 40 18 L 45 22 Z" fill="#228B22"/>
     <path d="M 58 25 L 60 18 L 55 22 Z" fill="#228B22"/>
@@ -112,8 +112,8 @@ export const heroIcons = [
     <rect x="50" y="70" width="5" height="15" fill="#228B22"/>
   </svg>`,
 
-  // スケルトン
-  `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+	// スケルトン
+	`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
     <circle cx="50" cy="32" r="14" fill="#D3D3D3"/>
     <circle cx="44" cy="30" r="3" fill="#000000"/>
     <circle cx="56" cy="30" r="3" fill="#000000"/>
@@ -126,8 +126,8 @@ export const heroIcons = [
     <circle cx="68" cy="71" r="3" fill="#A9A9A9"/>
   </svg>`,
 
-  // オーク
-  `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+	// オーク
+	`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
     <circle cx="50" cy="35" r="14" fill="#556B2F"/>
     <path d="M 42 24 L 40 15 L 46 22 Z" fill="#556B2F"/>
     <path d="M 58 24 L 60 15 L 54 22 Z" fill="#556B2F"/>
@@ -139,8 +139,8 @@ export const heroIcons = [
     <rect x="50" y="75" width="5" height="15" fill="#696969"/>
   </svg>`,
 
-  // バンパイア
-  `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+	// バンパイア
+	`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
     <circle cx="50" cy="35" r="14" fill="#FFF8DC"/>
     <path d="M 42 22 L 40 12 L 46 20 Z" fill="#8B0000"/>
     <path d="M 58 22 L 60 12 L 54 20 Z" fill="#8B0000"/>
@@ -154,5 +154,5 @@ export const heroIcons = [
 ];
 
 export function getRandomHeroIcon(): string {
-  return heroIcons[Math.floor(Math.random() * heroIcons.length)];
+	return heroIcons[Math.floor(Math.random() * heroIcons.length)];
 }
