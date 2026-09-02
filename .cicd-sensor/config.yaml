@@ -1,0 +1,5 @@
+# baseline 運用: baseline ルールは有効のまま、terminate を detect に変換して
+# CI をブロックしない。ノイズ・誤検知を観察後、monitor_mode を外して enforce に移行する。
+monitor_mode: true
+disable_baseline_rules: false
+default_max_alerts_per_rule: 10
