@@ -12,6 +12,12 @@ jobs:
     timeout-minutes: 10
 
     steps:
+      # cicd-sensor: CI ランタイムのセキュリティ監視。baseline 運用中 (monitor_mode) の
+      # ため検知してもジョブは失敗しない。セットアップ失敗も CI に波及させない。
+      - name: Start cicd-sensor
+        uses: cicd-sensor/cicd-sensor-action@6511eb44c91d71b2b93d71193b1bf2cb18352f66 # v0.0.38
+        continue-on-error: true
+
       - uses: actions/checkout@v5
 
       - uses: actions/setup-node@v5
@@ -38,6 +44,12 @@ jobs:
     timeout-minutes: 20
 
     steps:
+      # cicd-sensor: CI ランタイムのセキュリティ監視。baseline 運用中 (monitor_mode) の
+      # ため検知してもジョブは失敗しない。セットアップ失敗も CI に波及させない。
+      - name: Start cicd-sensor
+        uses: cicd-sensor/cicd-sensor-action@6511eb44c91d71b2b93d71193b1bf2cb18352f66 # v0.0.38
+        continue-on-error: true
+
       - uses: actions/checkout@v5
 
       - uses: actions/setup-node@v5
