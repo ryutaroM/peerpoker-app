@@ -3,12 +3,13 @@
 	import type { Message, Participant, PeerId } from '$lib/types';
 	import { onMount, setContext } from 'svelte';
 	import { getRandomHeroIcon } from '$lib/icons';
+	import { SvelteMap } from 'svelte/reactivity';
 
 	let peerId = $state<string>('');
 	let playerName = $state<string>('');
 	let playerIcon = $state<string>('');
 	let hasName = $state<boolean>(false);
-	let participants = $state<Map<PeerId, Participant>>(new Map());
+	const participants = new SvelteMap<PeerId, Participant>();
 	let isRevealed = $state<boolean>(false);
 	let isConnected = $state<boolean>(false);
 	let isConnecting = $state<boolean>(false);
@@ -127,13 +128,10 @@
 		},
 
 		vote: (value: string | number) => {
-			const newParticipants = new Map(participants);
-			const me = newParticipants.get(peerId);
+			const me = participants.get(peerId);
 			if (me) {
-				me.vote = value;
-				me.hasVoted = true;
+				participants.set(peerId, { ...me, vote: value, hasVoted: true });
 			}
-			participants = newParticipants;
 
 			const message: Message = {
 				type: 'vote',
@@ -155,12 +153,9 @@
 		},
 
 		reset: () => {
-			const newParticipants = new Map(participants);
-			newParticipants.forEach((participant) => {
-				participant.vote = undefined;
-				participant.hasVoted = false;
+			participants.forEach((participant, key) => {
+				participants.set(key, { ...participant, vote: undefined, hasVoted: false });
 			});
-			participants = newParticipants;
 			isRevealed = false;
 
 			const message: Message = {
@@ -194,13 +189,11 @@
 	function handleData(id: string, data: Message) {
 		console.log(`Received data from ${id}:`, data);
 
-		const newParticipants = new Map(participants);
-
 		switch (data.type) {
 			case 'join': {
 				const participantId = data.senderId;
-				if (!newParticipants.has(participantId)) {
-					newParticipants.set(participantId, {
+				if (!participants.has(participantId)) {
+					participants.set(participantId, {
 						name: data.payload?.name || 'Unknown',
 						hasVoted: false,
 						icon: data.payload?.icon
@@ -218,12 +211,12 @@
 						peerWrapper.sendTo(participantId, myMessage);
 					}
 				} else {
-					const participant = newParticipants.get(participantId);
-					if (participant && data.payload?.name) {
-						participant.name = data.payload.name;
-					}
-					if (participant && data.payload?.icon) {
-						participant.icon = data.payload.icon;
+					const participant = participants.get(participantId);
+					if (participant) {
+						const updated = { ...participant };
+						if (data.payload?.name) updated.name = data.payload.name;
+						if (data.payload?.icon) updated.icon = data.payload.icon;
+						participants.set(participantId, updated);
 					}
 				}
 				break;
@@ -241,10 +234,13 @@
 				break;
 			}
 			case 'vote': {
-				const participant = newParticipants.get(data.senderId);
+				const participant = participants.get(data.senderId);
 				if (participant) {
-					participant.vote = data.payload?.vote;
-					participant.hasVoted = true;
+					participants.set(data.senderId, {
+						...participant,
+						vote: data.payload?.vote,
+						hasVoted: true
+					});
 				}
 				break;
 			}
@@ -253,9 +249,8 @@
 				break;
 			}
 			case 'reset': {
-				newParticipants.forEach((participant) => {
-					participant.vote = undefined;
-					participant.hasVoted = false;
+				participants.forEach((participant, key) => {
+					participants.set(key, { ...participant, vote: undefined, hasVoted: false });
 				});
 				isRevealed = false;
 				break;
@@ -267,8 +262,6 @@
 				return;
 			}
 		}
-
-		participants = newParticipants;
 	}
 
 	function handlePeerConnected(id: string) {
@@ -276,13 +269,11 @@
 		isConnectingToPeer = false; // Successfully connected to peer
 
 		// ★ 新しいピアをローカルに追加（最初に）
-		const newParticipants = new Map(participants);
-		newParticipants.set(id, {
+		participants.set(id, {
 			name: 'Connecting...',
 			hasVoted: false,
 			icon: undefined
 		});
-		participants = newParticipants;
 
 		if (peerWrapper) {
 			// ★ 自分の情報だけを新しいピアに送信
@@ -313,9 +304,7 @@
 	function handlePeerDisconnected(id: string) {
 		if (!participants.has(id)) return;
 		console.log(`Peer disconnected: ${id}`);
-		const newParticipants = new Map(participants);
-		newParticipants.delete(id);
-		participants = newParticipants;
+		participants.delete(id);
 	}
 
 	function cleanupAndDisconnect() {

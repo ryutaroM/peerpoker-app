@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
-	import type { PeerId, Participant, Vote } from '$lib/types';
+	import type { PeerId, Participant } from '$lib/types';
 
 	interface GameStateContext {
 		participants: Map<PeerId, Participant>;

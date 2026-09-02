@@ -1,10 +1,17 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import ParticipantCard from './ParticipantCard.svelte';
 import type { Participant } from '$lib/types';
 
-const ICON = '<svg data-testid="hero-icon" viewBox="0 0 100 100"></svg>';
+const { ICON } = vi.hoisted(() => ({
+	ICON: '<svg data-testid="hero-icon" viewBox="0 0 100 100"></svg>'
+}));
+
+vi.mock('$lib/icons', () => ({
+	heroIcons: [ICON],
+	getRandomHeroIcon: () => ICON
+}));
 
 function participant(overrides: Partial<Participant> = {}): Participant {
 	return { name: 'Alice', hasVoted: false, ...overrides };
