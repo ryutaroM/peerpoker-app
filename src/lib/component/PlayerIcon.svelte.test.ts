@@ -3,7 +3,14 @@ import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import PlayerIcon from './PlayerIcon.svelte';
 
-const ICON = '<svg data-testid="hero-icon" viewBox="0 0 100 100"></svg>';
+const { ICON } = vi.hoisted(() => ({
+	ICON: '<svg data-testid="hero-icon" viewBox="0 0 100 100"></svg>'
+}));
+
+vi.mock('$lib/icons', () => ({
+	heroIcons: [ICON],
+	getRandomHeroIcon: () => ICON
+}));
 
 describe('PlayerIcon', () => {
 	it('icon が未指定ならプレースホルダーの ? を表示する', async () => {

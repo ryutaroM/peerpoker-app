@@ -17,7 +17,7 @@
 <div class="vote-cards">
 	<h3>Your Estimate</h3>
 	<div class="cards">
-		{#each voteOptions as option}
+		{#each voteOptions as option (option)}
 			<button
 				class="vote-card"
 				class:selected={selectedVote === option}
