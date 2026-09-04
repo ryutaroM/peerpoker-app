@@ -75,11 +75,36 @@ jobs:
           path: playwright-report/
           retention-days: 7
 
-  # TODO: lint ジョブを追加する
-  # `npm run lint` は biome check と prettier --check '**/*.svelte' は通るが、
-  # eslint が既存コンポーネントの 9 件で失敗する。以下を解消したら unit / e2e と並列で実行する:
+  # Lint: run biome check only for now. ESLint is disabled here because the repo has existing ESLint errors.
+  lint:
+    name: Lint (biome)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      # cicd-sensor: CI ランタイムのセキュリティ監視。baseline 運用中 (monitor_mode) の
+      # ため検知してもジョブは失敗しない。セットアップ失敗も CI に波及させない。
+      - name: Start cicd-sensor
+        uses: cicd-sensor/cicd-sensor-action@6511eb44c91d71b2b93d71193b1bf2cb18352f66 # v0.0.38
+        continue-on-error: true
+
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run biome check
+        run: npx biome check .
+
+  # TODO: Enable full `npm run lint` (biome + prettier + eslint) after fixing the existing ESLint errors:
   #   - GameState.svelte:      svelte/prefer-svelte-reactivity (Map → SvelteMap, 4 箇所)
   #   - ParticipantCard/PlayerIcon.svelte: svelte/no-at-html-tags ({@html} の XSS 警告)
   #   - ResultBanner.svelte:   @typescript-eslint/no-unused-vars (未使用 import の Vote)
   #   - VoteCards.svelte:      svelte/require-each-key
   #   - +page.svelte:          svelte/no-useless-children-snippet
+
